@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campaign Details | CharityChain</title>
+    <meta
+      name="description"
+      content="View detailed information about this completed charity campaign and its donation history."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="nav-left">
+        <a href="index.html" class="logo" data-testid="link-home"
+          >CharityChain</a
+        >
+        <a href="index.html" class="nav-link" data-testid="link-nav-home"
+          >Home</a
+        >
+        <a href="create.html" class="nav-link" data-testid="link-nav-create"
+          >Create</a
+        >
+        <a
+          href="completed.html"
+          class="nav-link active"
+          data-testid="link-nav-completed"
+          >Completed</a
+        >
+      </div>
+      <div class="nav-right">
+        <button
+          id="modeToggle"
+          class="btn small secondary"
+          data-testid="button-theme-toggle"
+        >
+          Dark Mode
+        </button>
+        <button
+          id="connectWallet"
+          class="btn small"
+          data-testid="button-connect-wallet"
+        >
+          Connect Wallet
+        </button>
+        <button
+          id="disconnectWallet"
+          class="btn small secondary"
+          style="display: none"
+          data-testid="button-disconnect-wallet"
+        >
+          Disconnect
+        </button>
+      </div>
+    </nav>
+
+    <main class="container">
+      <div
+        class="status success"
+        style="position: relative; margin-bottom: 2rem; display: inline-block"
+      >
+        Completed
+      </div>
+      <h1 id="campaignTitle" data-testid="title-campaign">Loading...</h1>
+
+      <!-- Image Gallery -->
+      <div class="image-gallery">
+        <div id="campaignGallery" class="gallery-container">
+          <!-- Gallery will be inserted here (single image or carousel) -->
+        </div>
+      </div>
+      <!-- Campaign Details -->
+      <div class="campaign-card-content">
+        <p
+          id="campaignDesc"
+          data-testid="text-campaign-description"
+          style="font-size: 1.125rem; line-height: 1.7; margin: 1.5rem 0"
+        ></p>
+
+        <div class="goal-info">
+          <div>
+            <strong>Organizer:</strong>
+            <span id="ownerName" data-testid="text-owner-name"></span>
+          </div>
+          <div>
+            <strong>Contact:</strong>
+            <span id="ownerContact" data-testid="text-owner-contact"></span>
+          </div>
+        </div>
+
+        <div class="goal-info" style="margin-top: 1rem">
+          <span
+            ><strong>Goal:</strong>
+            <span id="goal" data-testid="text-campaign-goal">0 KPGT</span></span
+          >
+          <span
+            ><strong>Raised:</strong>
+            <span id="raised" data-testid="text-campaign-raised"
+              >0 KPGT</span
+            ></span
+          >
+        </div>
+      </div>
+
+      <!-- Donation History -->
+      <section class="donation-history" style="margin-top: 3rem">
+        <h2 class="section-title">Donation History</h2>
+        <table
+          id="donationTable"
+          class="donation-table"
+          data-testid="table-donations"
+        >
+          <thead>
+            <tr>
+              <th>Donor</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="donationBody">
+            <tr>
+              <td colspan="3" style="text-align: center">
+                Loading donations...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <!-- footer -->
+    <div id="footer"></div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+      window.process = { env: { NODE_ENV: "production" } };
+      window.global = window;
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
+
+    <script src="abi.js"></script>
+    <script src="theme.js"></script>
+    <script src="app.js"></script>
+    <script src="view.js"></script>
+  </body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Campaign | CharityChain</title>
+    <meta
+      name="description"
+      content="Create a new charity campaign on CharityChain. Share your cause with the world and receive transparent donations via blockchain."
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .create-hero {
+        background: linear-gradient(
+          135deg,
+          rgba(0, 192, 119, 0.08) 0%,
+          rgba(0, 230, 138, 0.12) 100%
+        );
+        padding: 3rem 2rem;
+        text-align: center;
+        border-bottom: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+      }
+
+      .create-hero h1 {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.02em;
+      }
+
+      .create-hero h1 span {
+        background: linear-gradient(
+          135deg,
+          var(--primary-green) 0%,
+          var(--primary-green-light) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .create-hero p {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      .tips-section {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .tips-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .tips-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .tip-card {
+        background: var(--green-50);
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-light);
+        transition: all var(--transition-fast);
+      }
+
+      .tip-card:hover {
+        background: var(--green-100);
+        transform: translateY(-2px);
+      }
+
+      .tip-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .tip-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+      }
+
+      .tip-text {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+
+      .category-select {
+        width: 100%;
+        padding: 0.875rem 1.125rem;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        font-family: var(--font-primary);
+        font-size: 1rem;
+        transition: all var(--transition-fast);
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300c077' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1.25rem;
+        padding-right: 2.5rem;
+      }
+
+      .category-select:focus {
+        outline: none;
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 3px var(--green-100);
+      }
+
+      .category-select option {
+        padding: 0.5rem;
+      }
+
+      .form-section {
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        background: var(--green-50);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-light);
+      }
+
+      .form-section-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .character-count {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: right;
+        margin-top: 0.25rem;
+      }
+
+      .success-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-light);
+      }
+
+      .metric {
+        text-align: center;
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        background: var(--green-50);
+      }
+
+      .metric-number {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--primary-green);
+        display: block;
+      }
+
+      .metric-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+      }
+
+      @media (max-width: 768px) {
+        .success-metrics {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar">
+      <div class="nav-left">
+        <a href="landingpage.html" class="logo" data-testid="link-home"
+          >CharityChain</a
+        >
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="create.html" class="nav-link active">Create</a>
+        <a href="completed.html" class="nav-link">Completed</a>
+      </div>
+
+      <div class="nav-right">
+        <button
+          id="modeToggle"
+          class="btn small secondary"
+          data-testid="button-theme-toggle"
+        >
+          Dark Mode
+        </button>
+        <button
+          id="connectWallet"
+          class="btn small"
+          data-testid="button-connect-wallet"
+        >
+          Connect Wallet
+        </button>
+        <button
+          id="disconnectWallet"
+          class="btn small secondary"
+          style="display: none"
+          data-testid="button-disconnect-wallet"
+        >
+          Disconnect
+        </button>
+      </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <div class="create-hero">
+      <h1>Start Your <span>Campaign</span></h1>
+      <p>
+        Share your story with the world. Create a transparent,
+        blockchain-powered campaign and receive donations with zero platform
+        fees.
+      </p>
+    </div>
+
+    <main class="create-wrapper">
+      <div style="display: flex; flex-direction: column; gap: 2rem">
+        <!-- TIPS SECTION -->
+        <div class="tips-section">
+          <div class="tips-title">💡 Tips for Success</div>
+          <div class="tips-grid">
+            <div class="tip-card">
+              <div class="tip-icon">📸</div>
+              <div class="tip-title">Use Quality Images</div>
+              <div class="tip-text">
+                Clear, compelling photos increase donations by 40%
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">📝</div>
+              <div class="tip-title">Tell Your Story</div>
+              <div class="tip-text">
+                Personal stories connect with donors emotionally
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">🎯</div>
+              <div class="tip-title">Set Clear Goals</div>
+              <div class="tip-text">
+                Specific amounts and timelines build trust
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon">🔄</div>
+              <div class="tip-title">Share Updates</div>
+              <div class="tip-text">
+                Keep donors informed about your progress
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="glass-form">
+          <h1>Campaign Details</h1>
+          <form id="createCampaignForm">
+            <!-- BASIC INFO SECTION -->
+            <div class="form-section">
+              <div class="form-section-title">📋 Basic Information</div>
+
+              <label for="title">Campaign Title *</label>
+              <input
+                id="title"
+                type="text"
+                placeholder="e.g., Help Build a School in Rural Kenya"
+                required
+                data-testid="input-campaign-title"
+                maxlength="100"
+              />
+              <div class="character-count">
+                <span id="titleCount">0</span>/100
+              </div>
+
+              <label for="category" style="margin-top: 1rem">Category *</label>
+              <select
+                id="category"
+                class="category-select"
+                required
+                data-testid="select-campaign-category"
+              >
+                <option value="">Select a category...</option>
+                <option value="medical">🏥 Medical</option>
+                <option value="education">🎓 Education</option>
+                <option value="emergency">🚨 Emergency</option>
+                <option value="community">🏘️ Community</option>
+                <option value="other">💡 Other</option>
+              </select>
+
+              <label for="description" style="margin-top: 1rem"
+                >Description *</label
+              >
+              <textarea
+                id="description"
+                placeholder="Tell your story... Be specific about:&#10;• What you're raising money for&#10;• Why this cause is important&#10;• How the funds will be used&#10;• The impact donors will make"
+                rows="8"
+                required
+                data-testid="textarea-campaign-description"
+                maxlength="2000"
+              ></textarea>
+              <div class="character-count">
+                <span id="descCount">0</span>/2000
+              </div>
+            </div>
+
+            <!-- IMAGES SECTION -->
+            <div class="form-section">
+              <div class="form-section-title">📷 Campaign Images</div>
+
+              <label>Add Photos (Up to 5)</label>
+              <div id="imageContainer" class="image-inputs">
+                <!-- Images will be added dynamically -->
+              </div>
+              <button
+                type="button"
+                class="btn-secondary small"
+                onclick="addImageField()"
+                data-testid="button-add-image"
+              >
+                + Add Image
+              </button>
+              <p
+                class="small"
+                style="margin-top: 0.5rem; color: var(--text-muted)"
+              >
+                💡 Tip: Add multiple high-quality images to showcase your
+                campaign. First image will be the cover photo.
+              </p>
+            </div>
+
+            <!-- GOAL SECTION -->
+            <div class="form-section">
+              <div class="form-section-title">💰 Funding Goal</div>
+
+              <label for="goal">Goal Amount (KPGT) *</label>
+              <input
+                id="goal"
+                type="number"
+                step="0.01"
+                placeholder="100"
+                required
+                data-testid="input-campaign-goal"
+              />
+
+              <!-- Platform Fee Preview -->
+              <div id="feePreview" class="fee-preview"></div>
+            </div>
+
+            <!-- CONTACT SECTION -->
+            <div class="form-section">
+              <div class="form-section-title">👤 Contact Information</div>
+
+              <label for="ownerName">Your Name *</label>
+              <input
+                id="ownerName"
+                type="text"
+                placeholder="John Doe"
+                required
+                data-testid="input-owner-name"
+              />
+
+              <label for="ownerContact" style="margin-top: 1rem"
+                >Contact Info *</label
+              >
+              <input
+                id="ownerContact"
+                type="text"
+                placeholder="email@example.com or +1234567890"
+                required
+                data-testid="input-owner-contact"
+              />
+              <p
+                class="small"
+                style="margin-top: 0.25rem; color: var(--text-muted)"
+              >
+                This will be visible to donors who want to reach out
+              </p>
+            </div>
+
+            <button
+              id="submit"
+              type="submit"
+              class="btn-primary full-width"
+              data-testid="button-create-campaign"
+              style="margin-top: 1.5rem; padding: 1rem"
+            >
+              🚀 Create Campaign
+            </button>
+          </form>
+        </div>
+
+        <!-- SUCCESS METRICS -->
+        <div class="success-metrics">
+          <div class="metric">
+            <span class="metric-number">95%</span>
+            <div class="metric-label">Success Rate</div>
+          </div>
+          <div class="metric">
+            <span class="metric-number">24h</span>
+            <div class="metric-label">Avg. First Donation</div>
+          </div>
+          <div class="metric">
+            <span class="metric-number">0%</span>
+            <div class="metric-label">Platform Fees</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREVIEW CARD -->
+      <div class="preview-card">
+        <h2>Live Preview</h2>
+        <div id="previewImageContainer">
+          <img
+            src="https://placehold.co/400x200/00c077/white?text=Campaign+Preview"
+            alt="Preview"
+            data-testid="img-preview"
+          />
+        </div>
+        <div
+          id="previewCategory"
+          style="
+            display: inline-block;
+            padding: 0.4rem 0.85rem;
+            background: var(--green-100);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+          "
+        >
+          Select category
+        </div>
+        <h3 id="previewTitle" data-testid="text-preview-title">
+          Your Campaign Title
+        </h3>
+        <p id="previewDesc" data-testid="text-preview-description">
+          Description will appear here...
+        </p>
+        <p class="goal-preview">
+          <strong>Goal:</strong>
+          <span id="previewGoal" data-testid="text-preview-goal">0</span> KPGT
+        </p>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer"></div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+      window.process = { env: { NODE_ENV: "production" } };
+      window.global = window;
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
+
+    <script src="abi.js"></script>
+    <script src="theme.js"></script>
+    <script src="app.js"></script>
+    <script src="create_campaign.js"></script>
+
+    <script>
+      // Character counters
+      const titleInput = document.getElementById("title");
+      const titleCount = document.getElementById("titleCount");
+      const descInput = document.getElementById("description");
+      const descCount = document.getElementById("descCount");
+      const categoryDisplayMap = {
+        medical: "🏥 Medical",
+        education: "🎓 Education",
+        emergency: "🚨 Emergency",
+        community: "🏘️ Community",
+        other: "💡 Other",
+      };
+
+      titleInput.addEventListener("input", () => {
+        titleCount.textContent = titleInput.value.length;
+      });
+
+      descInput.addEventListener("input", () => {
+        descCount.textContent = descInput.value.length;
+      });
+
+      // Category preview
+      const categorySelect = document.getElementById("category");
+      const previewCategory = document.getElementById("previewCategory");
+
+      categorySelect.addEventListener("change", () => {
+        const selectedOption =
+          categorySelect.options[categorySelect.selectedIndex];
+        previewCategory.textContent = selectedOption.text || "Select category";
+      });
+    </script>
+  </body>
+</html>

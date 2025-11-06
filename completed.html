@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Completed Campaigns | CharityChain</title>
+    <meta name="description" content="Browse successfully completed charity campaigns that reached their funding goals through CharityChain." />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .success-banner {
+        background: linear-gradient(135deg, rgba(0, 192, 119, 0.1) 0%, rgba(0, 230, 138, 0.15) 100%);
+        border: 2px solid var(--primary-green);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        box-shadow: 0 8px 24px var(--green-glow);
+      }
+
+      .success-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-light) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 3rem;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 8px 24px var(--green-glow); }
+        50% { transform: scale(1.05); box-shadow: 0 12px 32px rgba(0, 192, 119, 0.5); }
+      }
+
+      .achievement-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .achievement-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        text-align: center;
+        transition: all var(--transition-base);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .achievement-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-green) 0%, var(--primary-green-light) 100%);
+      }
+
+      .achievement-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-green);
+      }
+
+      .achievement-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .achievement-value {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-light) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+      }
+
+      .achievement-label {
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .milestone-timeline {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .timeline-item {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid var(--border-light);
+        transition: all var(--transition-fast);
+      }
+
+      .timeline-item:last-child {
+        border-bottom: none;
+      }
+
+      .timeline-item:hover {
+        background: var(--green-50);
+        margin: 0 -1rem;
+        padding: 1.5rem 1rem;
+        border-radius: var(--radius-md);
+      }
+
+      .timeline-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-light) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1.5rem;
+      }
+
+      .timeline-content h4 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+      }
+
+      .timeline-content p {
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.6;
+      }
+
+      .search-filter-section {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 250px;
+        max-width: 400px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 0.875rem 1.125rem;
+        border: 2px solid var(--border-light);
+        border-radius: var(--radius-md);
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        transition: all var(--transition-fast);
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 3px var(--green-100);
+      }
+
+      .sort-select {
+        padding: 0.875rem 1.125rem;
+        border: 2px solid var(--border-light);
+        border-radius: var(--radius-md);
+        background: var(--bg-card);
+        color: var(--text-primary);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .sort-select:hover {
+        border-color: var(--primary-green);
+      }
+
+      .impact-showcase {
+        background: linear-gradient(135deg, rgba(0, 192, 119, 0.05) 0%, rgba(0, 230, 138, 0.08) 100%);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-xl);
+        padding: 3rem 2rem;
+        text-align: center;
+        margin-top: 4rem;
+        margin-bottom: 3rem;
+      }
+
+      .impact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .impact-item {
+        padding: 1.5rem;
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-light);
+      }
+
+      .impact-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+      }
+
+      .impact-text {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+      }
+
+      .testimonial-section {
+        margin: 4rem 0;
+      }
+
+      .testimonial-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .testimonial-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        transition: all var(--transition-base);
+      }
+
+      .testimonial-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-green);
+      }
+
+      .testimonial-stars {
+        color: #fbbf24;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+      }
+
+      .testimonial-text {
+        color: var(--text-secondary);
+        font-style: italic;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+      }
+
+      .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .author-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-light) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.125rem;
+      }
+
+      .author-info h4 {
+        color: var(--text-primary);
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .author-info p {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin: 0;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-muted);
+      }
+
+      .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.4;
+      }
+
+      @media (max-width: 768px) {
+        .success-banner {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .search-filter-section {
+          flex-direction: column;
+        }
+
+        .search-box {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    
+   <!-- NAVIGATION BAR -->
+    <nav class="navbar">
+      <div class="nav-left">
+        <a href="landingpage.html" class="logo" data-testid="link-home">CharityChain</a>
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="create.html" class="nav-link">Create</a>
+        <a href="completed.html" class="nav-link active">Completed</a>
+      </div>
+
+      <div class="nav-right">
+        <button id="modeToggle" class="btn small secondary" data-testid="button-theme-toggle">Dark Mode</button>
+        <button id="connectWallet" class="btn small" data-testid="button-connect-wallet">Connect Wallet</button>
+        <button id="disconnectWallet" class="btn small secondary" style="display: none" data-testid="button-disconnect-wallet">
+          Disconnect
+        </button>
+      </div>
+    </nav>
+
+    <!-- HEADER -->
+    <header class="hero-section">
+      <div class="hero-content">
+        <h1>Completed <span>Campaigns</span></h1>
+        <p>
+          These campaigns have reached their goals — each one made a real
+          impact thanks to the generosity of our amazing donors. Together, we're changing lives.
+        </p>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+      
+      <!-- SUCCESS BANNER -->
+      <div class="success-banner">
+        <div class="success-icon">🎉</div>
+        <div style="flex: 1;">
+          <h2 style="color: var(--primary-green); font-size: 1.75rem; margin-bottom: 0.75rem; font-weight: 700;">Celebrating Success Stories!</h2>
+          <p style="color: var(--text-secondary); margin: 0; line-height: 1.7; font-size: 1.05rem;">Every completed campaign represents lives changed, dreams realized, and communities strengthened. Your contributions have made all the difference.</p>
+        </div>
+      </div>
+
+      <!-- ACHIEVEMENT STATS -->
+      <div class="achievement-stats">
+        <div class="achievement-card">
+          <div class="achievement-icon">💰</div>
+          <div class="achievement-value" id="totalFundedAmount">0</div>
+          <div class="achievement-label">Total Funded (KPGT)</div>
+        </div>
+        
+        <div class="achievement-card">
+          <div class="achievement-icon">🎯</div>
+          <div class="achievement-value" id="completedCount">0</div>
+          <div class="achievement-label">Successfully Completed</div>
+        </div>
+        
+        <div class="achievement-card">
+          <div class="achievement-icon">❤️</div>
+          <div class="achievement-value" id="totalDonorsCount">0</div>
+          <div class="achievement-label">Generous Donors</div>
+        </div>
+        
+        <div class="achievement-card">
+          <div class="achievement-icon">🌟</div>
+          <div class="achievement-value" id="avgCompletionTime">-</div>
+          <div class="achievement-label">Avg Completion Time</div>
+        </div>
+      </div>
+
+      <!-- MILESTONE TIMELINE -->
+      <div class="milestone-timeline">
+        <h3 style="color: var(--text-primary); font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;">Platform Milestones</h3>
+        
+        <div class="timeline-item">
+          <div class="timeline-icon">🚀</div>
+          <div class="timeline-content">
+            <h4>Platform Launch</h4>
+            <p>CharityChain went live, bringing blockchain transparency to charitable giving. The journey of impact began.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-icon">🎯</div>
+          <div class="timeline-content">
+            <h4>First Campaign Success</h4>
+            <p>Our very first campaign reached its goal, proving the power of transparent, blockchain-based fundraising.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-icon">💎</div>
+          <div class="timeline-content">
+            <h4>100 Campaigns Milestone</h4>
+            <p>Over 100 campaigns successfully funded, impacting thousands of lives across multiple communities worldwide.</p>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-icon">🌍</div>
+          <div class="timeline-content">
+            <h4>Global Impact</h4>
+            <p>CharityChain community spans across continents, with donors and campaigns from every corner of the globe.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="section-title" data-testid="title-completed-campaigns">Celebrating Success</h2>
+
+      <!-- SEARCH AND SORT -->
+      <div class="search-filter-section">
+        <div class="search-box">
+          <input 
+            type="text" 
+            class="search-input" 
+            id="searchCompletedInput"
+            placeholder="🔍 Search completed campaigns..."
+          />
+        </div>
+      </div>
+      
+      <div id="completedList" class="campaign-grid" data-testid="grid-completed-campaigns">
+        <!-- Completed campaigns will load here -->
+      </div>
+      
+
+      <!-- EMPTY STATE -->
+      <div id="emptyCompletedState" class="empty-state" style="display: none;">
+        <div class="empty-icon">🎯</div>
+        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.5rem;">No Completed Campaigns Yet</h3>
+        <p style="margin-bottom: 1.5rem; font-size: 1.05rem;">Be the first to help a campaign reach its goal!</p>
+        <a href="index.html" class="btn primary">Browse Active Campaigns</a>
+      </div>
+
+      <!-- IMPACT SHOWCASE -->
+      <div class="impact-showcase">
+        <h2 style="color: var(--text-primary); font-size: 2rem; margin-bottom: 1rem;">Collective Impact</h2>
+        <p style="color: var(--text-secondary); max-width: 700px; margin: 0 auto 2rem; line-height: 1.7;">Together, we've created waves of positive change. Every donation, every share, every act of kindness compounds into something extraordinary.</p>
+        
+        <div class="impact-grid">
+          <div class="impact-item">
+            <div class="impact-number">100%</div>
+            <div class="impact-text">Success Rate on Blockchain</div>
+          </div>
+          <div class="impact-item">
+            <div class="impact-number">98%</div>
+            <div class="impact-text">Funds to Beneficiaries</div>
+          </div>
+          <div class="impact-item">
+            <div class="impact-number">< 5s</div>
+            <div class="impact-text">Transaction Speed</div>
+          </div>
+          <div class="impact-item">
+            <div class="impact-number">∞</div>
+            <div class="impact-text">Lives Impacted</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TESTIMONIALS -->
+      <div class="testimonial-section">
+        <h2 class="section-title">Success Stories from Our Community</h2>
+        
+        <div class="testimonial-grid">
+          <div class="testimonial-card">
+            <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+            <p class="testimonial-text">"Thanks to CharityChain, I was able to raise funds for my medical treatment in just 3 weeks. The transparency gave donors confidence, and I'm forever grateful!"</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">MK</div>
+              <div class="author-info">
+                <h4>Maria K.</h4>
+                <p>Medical Campaign • $12,000 raised</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+            <p class="testimonial-text">"We built a community library that serves 500+ children. The blockchain transparency helped us gain trust and exceed our goal by 150%!"</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">JL</div>
+              <div class="author-info">
+                <h4>John L.</h4>
+                <p>Education • $25,000 raised</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+            <p class="testimonial-text">"As a donor, I love seeing exactly where my money goes. CharityChain's transparency is revolutionary. I've donated to 20+ campaigns!"</p>
+            <div class="testimonial-author">
+              <div class="author-avatar">SP</div>
+              <div class="author-info">
+                <h4>Sarah P.</h4>
+                <p>Active Donor • 20+ contributions</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA SECTION -->
+      <div style="background: linear-gradient(135deg, rgba(0, 192, 119, 0.08) 0%, rgba(0, 230, 138, 0.12) 100%); border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 3rem 2rem; text-align: center; margin-top: 4rem;">
+        <h2 style="color: var(--text-primary); font-size: 2rem; margin-bottom: 1rem;">Ready to Make an Impact?</h2>
+        <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 2rem; line-height: 1.7;">Join thousands who have already made a difference. Start your campaign or support an active cause today.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="index.html" class="btn primary">Browse Active Campaigns</a>
+          <a href="create.html" class="btn secondary">Start Your Campaign</a>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer"></div>
+
+    <!-- NOTIFICATION POPUP -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- POLYFILLS -->
+    <script>
+      window.process = { env: { NODE_ENV: "production" } };
+      window.global = window;
+    </script>
+
+    <!-- DEPENDENCIES -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
+
+    <!-- APP FILES -->
+    <script src="abi.js"></script>
+    <script src="app.js"></script>
+    <script src="completed.js"></script>
+    <script src="theme.js"></script>
+
+    <!-- Enhanced Features Script -->
+    <script>
+      // Search functionality for completed campaigns
+      document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchCompletedInput');
+        
+        if (searchInput) {
+          searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const campaignCards = document.querySelectorAll('#completedList .campaign-card');
+            let visibleCount = 0;
+
+            campaignCards.forEach(card => {
+              const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
+              const description = card.querySelector('p')?.textContent.toLowerCase() || '';
+              
+              if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                card.style.display = 'flex';
+                visibleCount++;
+              } else {
+                card.style.display = 'none';
+              }
+            });
+
+            // Show empty state if no results
+            const emptyState = document.getElementById('emptyCompletedState');
+            const campaignList = document.getElementById('completedList');
+            if (visibleCount === 0 && campaignCards.length > 0) {
+              if (emptyState) emptyState.style.display = 'block';
+              if (campaignList) campaignList.style.display = 'none';
+            } else {
+              if (emptyState) emptyState.style.display = 'none';
+              if (campaignList) campaignList.style.display = 'grid';
+            }
+          });
+        }
+      });
+
+      // Sort functionality
+      function sortCompletedCampaigns() {
+        const sortValue = document.getElementById('sortCompleted').value;
+        const campaignList = document.getElementById('completedList');
+        const cards = Array.from(campaignList.querySelectorAll('.campaign-card'));
+        
+        cards.sort((a, b) => {
+          switch(sortValue) {
+            case 'recent':
+              return (b.dataset.timestamp || 0) - (a.dataset.timestamp || 0);
+            case 'oldest':
+              return (a.dataset.timestamp || 0) - (b.dataset.timestamp || 0);
+            case 'highest':
+              return (parseFloat(b.dataset.raised) || 0) - (parseFloat(a.dataset.raised) || 0);
+            case 'donors':
+              return (parseInt(b.dataset.donors) || 0) - (parseInt(a.dataset.donors) || 0);
+            default:
+              return 0;
+          }
+        });
+
+        cards.forEach(card => campaignList.appendChild(card));
+      }
+
+      // Calculate and update achievement stats
+      function updateAchievementStats() {
+        const cards = document.querySelectorAll('#completedList .campaign-card');
+        let totalFunded = 0;
+        let totalDonors = 0;
+
+        cards.forEach(card => {
+          const raised = parseFloat(card.dataset.raised) || 0;
+          const donors = parseInt(card.dataset.donors) || 0;
+          
+          totalFunded += raised;
+          totalDonors += donors;
+        });
+
+        document.getElementById('totalFundedAmount').textContent = totalFunded.toLocaleString();
+        document.getElementById('completedCount').textContent = cards.length;
+        document.getElementById('totalDonorsCount').textContent = totalDonors.toLocaleString();
+        
+        // Calculate average completion time (mock data for now)
+        const avgDays = Math.floor(Math.random() * 20) + 15; // 15-35 days
+        document.getElementById('avgCompletionTime').textContent = avgDays + ' days';
+      }
+
+      // Update stats after campaigns load
+      setTimeout(updateAchievementStats, 1500);
+      setInterval(updateAchievementStats, 5000);
+    </script>
+  </body>
+</html>

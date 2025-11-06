@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Test - CharityChain</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            font-weight: 600;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #00c077;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        button:hover { background: #00d482; }
+        pre {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 CharityChain Connection Test</h1>
+    
+    <div class="test-box">
+        <h2>1. Web3 Library</h2>
+        <div id="web3Status"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>2. RPC Connection</h2>
+        <button onclick="testRPC()">Test RPC Connection</button>
+        <div id="rpcStatus"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>3. Contract Connection</h2>
+        <button onclick="testContract()">Test Contract</button>
+        <div id="contractStatus"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>4. API Connections</h2>
+        <button onclick="testAPIs()">Test Exchange Rate APIs</button>
+        <div id="apiStatus"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="abi.js"></script>
+    <script>
+        // Check Web3 library
+        window.addEventListener('DOMContentLoaded', () => {
+            const status = document.getElementById('web3Status');
+            if (typeof Web3 !== 'undefined') {
+                status.innerHTML = '<div class="status success">✅ Web3 library loaded successfully</div>';
+            } else {
+                status.innerHTML = '<div class="status error">❌ Web3 library not found</div>';
+            }
+        });
+
+        // Test RPC connection
+        async function testRPC() {
+            const status = document.getElementById('rpcStatus');
+            status.innerHTML = '<div class="status info">⏳ Testing RPC connection...</div>';
+            
+            try {
+                const web3 = new Web3(new Web3.providers.HttpProvider('https://rpc1.paseo.mandalachain.io'));
+                const blockNumber = await web3.eth.getBlockNumber();
+                const chainId = await web3.eth.getChainId();
+                
+                status.innerHTML = `
+                    <div class="status success">✅ RPC Connection successful</div>
+                    <pre>Chain ID: ${chainId}
+Latest Block: ${blockNumber}</pre>
+                `;
+            } catch (err) {
+                status.innerHTML = `
+                    <div class="status error">❌ RPC Connection failed</div>
+                    <pre>${err.message}</pre>
+                `;
+            }
+        }
+
+        // Test contract
+        async function testContract() {
+            const status = document.getElementById('contractStatus');
+            status.innerHTML = '<div class="status info">⏳ Testing contract connection...</div>';
+            
+            try {
+                if (typeof contractABI === 'undefined' || typeof contractAddress === 'undefined') {
+                    throw new Error('Contract ABI or address not found. Make sure abi.js is loaded.');
+                }
+
+                const web3 = new Web3(new Web3.providers.HttpProvider('https://rpc1.paseo.mandalachain.io'));
+                const contract = new web3.eth.Contract(contractABI, contractAddress);
+                
+                const campaignCount = await contract.methods.campaignCount().call();
+                const feePercent = await contract.methods.getPlatformFeePercent().call();
+                
+                status.innerHTML = `
+                    <div class="status success">✅ Contract connection successful</div>
+                    <pre>Contract Address: ${contractAddress}
+Campaign Count: ${campaignCount}
+Platform Fee: ${feePercent / 100}%</pre>
+                `;
+            } catch (err) {
+                status.innerHTML = `
+                    <div class="status error">❌ Contract connection failed</div>
+                    <pre>${err.message}</pre>
+                `;
+            }
+        }
+
+        // Test APIs
+        async function testAPIs() {
+            const status = document.getElementById('apiStatus');
+            status.innerHTML = '<div class="status info">⏳ Testing API connections...</div>';
+            
+            let results = [];
+
+            // Test CoinGecko
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=kpg-token&vs_currencies=usd');
+                const data = await res.json();
+                const rate = data["kpg-token"]?.usd || 0;
+                results.push(`✅ CoinGecko: ${rate > 0 ? rate + ' USD' : 'No data'}`);
+            } catch (err) {
+                results.push(`❌ CoinGecko: ${err.message}`);
+            }
+
+            // Test CryptoCompare
+            try {
+                const res = await fetch('https://min-api.cryptocompare.com/data/price?fsym=KPGT&tsyms=USD');
+                const data = await res.json();
+                const rate = data.USD || 0;
+                results.push(`✅ CryptoCompare: ${rate > 0 ? rate + ' USD' : 'No data'}`);
+            } catch (err) {
+                results.push(`❌ CryptoCompare: ${err.message}`);
+            }
+
+            status.innerHTML = `
+                <div class="status ${results.some(r => r.includes('✅')) ? 'success' : 'error'}">
+                    API Test Results
+                </div>
+                <pre>${results.join('\n')}</pre>
+            `;
+        }
+
+        // Run initial tests
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                testRPC();
+                testContract();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

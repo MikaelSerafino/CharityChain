@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Donate | CharityChain</title>
+    <meta
+      name="description"
+      content="Support this campaign by donating KPGT tokens. Every contribution makes a difference."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <style>
+    /* Progress bar animation for donate page */
+    .progress-container {
+      margin: 1rem 0;
+    }
+
+    .progress-bar-wrapper {
+      position: relative;
+      width: 100%;
+      height: 16px;
+      background: rgba(200, 200, 200, 0.3);
+      border-radius: 8px;
+      overflow: visible;
+    }
+
+    .progress-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #00c077, #00e68a);
+      border-radius: 8px;
+      width: 0; /* Start at 0 for animation */
+      animation: growBar 1.4s forwards;
+    }
+
+    @keyframes growBar {
+      from {
+        width: 0;
+      }
+      to {
+        width: var(--progress-width);
+      }
+    }
+
+    .progress-text {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .goal-info {
+      display: flex;
+      justify-content: space-between;
+      margin: 1rem 0;
+    }
+
+    .fee-info {
+      font-size: 0.9rem;
+      color: #ff9800;
+      margin: 0.5rem 0;
+    }
+  </style>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="nav-left">
+        <a href="index.html" class="logo" data-testid="link-home"
+          >CharityChain</a
+        >
+        <a href="index.html" class="nav-link active" data-testid="link-nav-home"
+          >Home</a
+        >
+        <a href="create.html" class="nav-link" data-testid="link-nav-create"
+          >Create</a
+        >
+        <a
+          href="completed.html"
+          class="nav-link"
+          data-testid="link-nav-completed"
+          >Completed</a
+        >
+      </div>
+
+      <div class="nav-right">
+        <button
+          id="modeToggle"
+          class="btn small secondary"
+          data-testid="button-theme-toggle"
+        >
+          Dark Mode
+        </button>
+        <button
+          id="connectWallet"
+          class="btn small"
+          data-testid="button-connect-wallet"
+        >
+          Connect Wallet
+        </button>
+        <button
+          id="disconnectWallet"
+          class="btn small secondary"
+          style="display: none"
+          data-testid="button-disconnect-wallet"
+        >
+          Disconnect
+        </button>
+      </div>
+    </nav>
+
+    <main class="container">
+      <h1 id="campaignTitle" data-testid="title-campaign">
+        Loading Campaign...
+      </h1>
+
+      <!-- Image Gallery -->
+      <div id="campaignGallery" class="image-gallery">
+        <div class="gallery-container">
+          <img
+            id="campaignImage"
+            class="campaign-image"
+            alt="Campaign Image"
+            data-testid="img-campaign-main"
+          />
+        </div>
+        <div id="imageCarousel" class="image-carousel" style="display: none">
+          <!-- Thumbnail images will be added here -->
+        </div>
+      </div>
+
+      <!-- Campaign Details -->
+      <div class="campaign-card-content">
+        <p
+          id="campaignDesc"
+          data-testid="text-campaign-description"
+          style="font-size: 1.125rem; line-height: 1.7; margin: 1.5rem 0"
+        ></p>
+
+        <div class="goal-info">
+          <div>
+            <strong>Organizer:</strong>
+            <span id="ownerName" data-testid="text-owner-name"></span>
+          </div>
+          <div>
+            <strong>Contact:</strong>
+            <span id="ownerContact" data-testid="text-owner-contact"></span>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-container">
+          <div class="progress-bar-wrapper">
+            <div id="progressBar" class="progress-fill" style="width: 0%"></div>
+          </div>
+          <div class="progress-text">
+            <span id="progressPercent" data-testid="text-progress-percent"
+              >0%</span
+            >
+          </div>
+        </div>
+
+        <div class="goal-info">
+          <span
+            ><strong>Goal:</strong>
+            <span id="goal" data-testid="text-campaign-goal">0</span> KPGT</span
+          >
+          <span
+            ><strong>Raised:</strong>
+            <span id="raised" data-testid="text-campaign-raised">0</span>
+            KPGT</span
+          >
+        </div>
+
+        <p id="feeInfo" class="fee-info"></p>
+      </div>
+
+      <!-- Donation Box -->
+      <div class="donate-box">
+        <h2 style="margin-bottom: 1rem">Make a Donation</h2>
+        <input
+          id="donateAmount"
+          type="number"
+          step="0.01"
+          placeholder="Enter amount in KPGT"
+          data-testid="input-donate-amount"
+        />
+        <button
+          id="donateBtn"
+          class="btn-primary full-width"
+          data-testid="button-donate"
+        >
+          Donate Now
+        </button>
+      </div>
+
+      <!-- Donation History -->
+      <h2 class="section-title" style="margin-top: 3rem">Donation History</h2>
+      <ul id="donationList" class="donation-list" data-testid="list-donations">
+        <li class="no-donations">
+          No donations yet. Be the first to support this campaign!
+        </li>
+      </ul>
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer"></div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+      <div class="spinner"></div>
+      <div id="loadingText">Processing your donation...</div>
+    </div>
+
+    <script>
+      window.process = { env: { NODE_ENV: "production" } };
+      window.global = window;
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
+
+    <script src="abi.js"></script>
+    <script src="theme.js"></script>
+    <script src="donate.js"></script>
+  </body>
+</html>

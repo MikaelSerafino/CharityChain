@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@reown/appkit": "^1.8.10",
+    "@reown/appkit-adapter-wagmi": "^1.0.4",
+    "@reown/appkit-common": "^1.8.10",
+    "@reown/appkit-universal-connector": "^1.8.10",
+    "ethers": "^6.15.0",
+    "viem": "^2.38.2",
+    "wagmi": "^1.4.13"
+  }
+}
