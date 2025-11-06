@@ -1,4 +1,4 @@
-// donate.js – Enhanced with timestamps, fee preview, USD conversion, and gallery
+// donate.js – Enhanced with timestamps, fee preview, gallery, and carousel
 
 let web3;
 let contract;
@@ -6,6 +6,10 @@ let accounts;
 let readOnlyWeb3;
 let platformFeePercent = 250; // Default 2.5%
 const KPGT_SYMBOL = "KPGT";
+
+// Global variables for image carousel
+let campaignImages = [];
+let currentImageIndex = 0;
 
 // --- Toast notification ---
 function showNotification(message, type = "info", ttl = 5000) {
@@ -101,28 +105,6 @@ function clearWalletButtonUI() {
   if (disc) disc.style.display = "none";
 }
 
-// --- Fetch live USD rate (CoinGecko) ---
-async function getKPGTtoUSD() {
-  try {
-    const res = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=kpg-token&vs_currencies=usd"
-    );
-    const data = await res.json();
-    return data["kpg-token"]?.usd || 0;
-  } catch {
-    try {
-      const res = await fetch(
-        "https://min-api.cryptocompare.com/data/price?fsym=KPGT&tsyms=USD"
-      );
-      const data = await res.json();
-      return data.USD || 0;
-    } catch {
-      console.warn("Could not fetch KPGT/USD rate");
-      return 0;
-    }
-  }
-}
-
 // --- Calculate and display fee breakdown ---
 function updateFeeBreakdown(amount) {
   const feeBreakdownEl = document.getElementById("feeBreakdown");
@@ -161,6 +143,63 @@ function formatTimestamp(timestamp) {
   return date.toLocaleString("en-US", options);
 }
 
+// --- Image carousel functions ---
+function changeDetailImage(direction) {
+  if (!campaignImages.length) return;
+  
+  const totalImages = campaignImages.length;
+  currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
+  setDetailImage(currentImageIndex);
+}
+
+function setDetailImage(index) {
+  if (!campaignImages.length) return;
+  
+  const imgElement = document.getElementById('campaignImage');
+  const dots = document.querySelectorAll('.campaign-hero .dot');
+  
+  if (imgElement) {
+    imgElement.src = campaignImages[index];
+    imgElement.onerror = () => {
+      imgElement.src = 'placeholder.jpg';
+    };
+  }
+  
+  // Update dots
+  dots.forEach((dot, i) => {
+    dot.classList.toggle('active', i === index);
+  });
+  
+  currentImageIndex = index;
+}
+
+function createHeroCarousel(images) {
+  const campaignImage = document.getElementById('campaignImage');
+  if (!campaignImage || images.length <= 1) return;
+
+  const heroSection = campaignImage.closest('.campaign-hero');
+  if (!heroSection) return;
+
+  // Remove existing carousel controls if any
+  const existingControls = heroSection.querySelectorAll('.carousel-arrow, .image-dots');
+  existingControls.forEach(el => el.remove());
+
+  // Create carousel HTML
+  const carouselHTML = `
+    <button class="carousel-arrow prev" onclick="changeDetailImage(-1)">‹</button>
+    <button class="carousel-arrow next" onclick="changeDetailImage(1)">›</button>
+    <div class="image-dots">
+      ${images.map((_, i) => `
+        <div class="dot ${i === 0 ? 'active' : ''}" 
+             onclick="setDetailImage(${i})" 
+             data-index="${i}"></div>
+      `).join('')}
+    </div>
+  `;
+
+  heroSection.insertAdjacentHTML('beforeend', carouselHTML);
+}
+
 // --- Load campaign info ---
 async function loadCampaign() {
   const params = new URLSearchParams(window.location.search);
@@ -189,6 +228,24 @@ async function loadCampaign() {
     document.getElementById("raised").innerText = raisedKPGT.toFixed(4);
     document.getElementById("ownerName").innerText = c.ownerName;
     document.getElementById("ownerContact").innerText = c.ownerContact;
+
+    // --- Handle hero image and carousel ---
+    const campaignImage = document.getElementById('campaignImage');
+    if (campaignImage) {
+      campaignImages = c.imageURLs && c.imageURLs.length > 0 ? c.imageURLs : [c.imageURL || 'placeholder.jpg'];
+      currentImageIndex = 0;
+      
+      // Set initial image
+      campaignImage.src = campaignImages[0];
+      campaignImage.onerror = () => {
+        campaignImage.src = 'placeholder.jpg';
+      };
+
+      // Create carousel if multiple images
+      if (campaignImages.length > 1) {
+        createHeroCarousel(campaignImages);
+      }
+    }
 
     // --- Progress bar with platform fee visualization ---
     const progressBar = document.getElementById("progressBar");
@@ -263,25 +320,7 @@ async function loadCampaign() {
       )}% • Expected Fee: ${platformFeeKPGT.toFixed(4)} KPGT`;
     }
 
-    // --- Currency conversion ---
-    const rate = await getKPGTtoUSD();
-    if (rate > 0) {
-      const goalUSD = (goalKPGT * rate).toFixed(2);
-      const raisedUSD = (raisedKPGT * rate).toFixed(2);
-
-      const currencyEl = document.getElementById("currencyConversion");
-      if (currencyEl) {
-        currencyEl.innerHTML = `
-          <div class="currency-box">
-            <p><strong>Goal:</strong> $${goalUSD} USD</p>
-            <p><strong>Raised:</strong> $${raisedUSD} USD</p>
-            <p class="small">1 KPGT ≈ $${rate.toFixed(4)} USD</p>
-          </div>
-        `;
-      }
-    }
-
-    loadDonations(id, rate);
+    loadDonations(id);
   } catch (err) {
     console.error("Error loading campaign:", err);
     showNotification("Failed to load campaign details", "error");
@@ -289,7 +328,7 @@ async function loadCampaign() {
 }
 
 // --- Donation history with timestamps ---
-async function loadDonations(id, rate = 0) {
+async function loadDonations(id) {
   const activeContract = contract || initReadOnlyWeb3();
   const activeWeb3 = web3 || readOnlyWeb3;
 
@@ -306,15 +345,10 @@ async function loadDonations(id, rate = 0) {
       return;
     }
 
-    if (!rate) {
-      rate = await getKPGTtoUSD();
-    }
-
     [...donations].reverse().forEach((d) => {
       const amountKPGT = parseFloat(
         activeWeb3.utils.fromWei(d.amount, "ether")
       );
-      const usd = rate > 0 ? ` (~$${(amountKPGT * rate).toFixed(2)})` : "";
       const dateTime = formatTimestamp(d.timestamp);
 
       const li = document.createElement("li");
@@ -325,9 +359,7 @@ async function loadDonations(id, rate = 0) {
             0,
             8
           )}...${d.donor.slice(-6)}</strong>
-          <span class="donation-amount">${amountKPGT.toFixed(
-            4
-          )} ${KPGT_SYMBOL}${usd}</span>
+          <span class="donation-amount">${amountKPGT.toFixed(4)} KPGT</span>
         </div>
         <div class="donation-date">${dateTime}</div>
       `;

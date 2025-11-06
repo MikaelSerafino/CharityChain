@@ -444,13 +444,13 @@ html {
   height: 180px;
   object-fit: cover;
   transition: transform var(--transition-slow);
-  border-radius: 0;
+  border-radius: 10px;
   margin: 0;
 }
 
 .campaign-card:hover img,
 .campaign-card:hover .main-img {
-  transform: scale(1.02);
+  transform: scale(1.0);
 }
 
 .campaign-card-content {
@@ -518,11 +518,11 @@ html {
   background: rgba(0, 192, 119, 0.05);
   border-radius: 6px;
   font-size: 0.85rem;
+  max-height: 15%;
 }
 
 .owner-info strong {
   display: block;
-  margin-bottom: 0.15rem;
 }
 
 .owner-info small {
@@ -1960,3 +1960,5 @@ html {
         margin: 0 auto 1rem;
         box-shadow: 0 4px 12px var(--green-glow);
       }
+
+      

@@ -11,18 +11,347 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <style>
-    /* Progress bar animation for donate page */
-    .progress-container {
-      margin: 1rem 0;
+    /* === HERO IMAGE CAROUSEL (Donate Page) === */
+    .campaign-hero {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      margin-bottom: 2rem;
+    }
+
+    .campaign-hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* High quality image rendering */
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: high-quality;
+      image-rendering: crisp-edges;
+    }
+
+    /* For hero section carousel arrows - always visible */
+    .campaign-hero .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 192, 119, 0.9),
+        rgba(0, 230, 138, 0.9)
+      );
+      color: white;
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      z-index: 20;
+      opacity: 0.8;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .campaign-hero .carousel-arrow:hover {
+      opacity: 1;
+      background: linear-gradient(
+        135deg,
+        rgba(0, 230, 138, 1),
+        rgba(0, 192, 119, 1)
+      );
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 6px 16px rgba(0, 192, 119, 0.5);
+    }
+
+    .campaign-hero .carousel-arrow.prev {
+      left: 20px;
+    }
+
+    .campaign-hero .carousel-arrow.next {
+      right: 20px;
+    }
+
+    /* Image dots for hero */
+    .campaign-hero .image-dots {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 20;
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+    }
+
+    .campaign-hero .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .campaign-hero .dot:hover {
+      background: rgba(255, 255, 255, 0.8);
+      transform: scale(1.2);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .campaign-hero .dot.active {
+      background: white;
+      width: 16px;
+      border-radius: 8px;
+      border-color: rgba(0, 192, 119, 0.8);
+      box-shadow: 0 0 8px rgba(0, 192, 119, 0.6);
+    }
+
+    .campaign-hero-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2rem;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+      color: white;
+      z-index: 10;
+    }
+
+    .campaign-hero-overlay h1 {
+      margin: 0;
+      font-size: 2rem;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Dark mode adjustments */
+    :root[data-theme="dark"] .campaign-hero .carousel-arrow {
+      background: linear-gradient(
+        135deg,
+        rgba(0, 192, 119, 0.85),
+        rgba(0, 230, 138, 0.85)
+      );
+    }
+
+    :root[data-theme="dark"] .campaign-hero .carousel-arrow:hover {
+      background: linear-gradient(
+        135deg,
+        rgba(0, 230, 138, 0.95),
+        rgba(0, 192, 119, 0.95)
+      );
+    }
+
+    :root[data-theme="dark"] .campaign-hero .image-dots {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .campaign-hero {
+        height: 300px;
+      }
+
+      .campaign-hero .carousel-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+
+      .campaign-hero .carousel-arrow.prev {
+        left: 10px;
+      }
+
+      .campaign-hero .carousel-arrow.next {
+        right: 10px;
+      }
+
+      .campaign-hero .image-dots {
+        padding: 8px 16px;
+      }
+
+      .campaign-hero .dot {
+        width: 10px;
+        height: 10px;
+      }
+
+      .campaign-hero .dot.active {
+        width: 14px;
+      }
+
+      .campaign-hero-overlay h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* Two Column Layout */
+    .campaign-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .campaign-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .campaign-sidebar {
+        order: -1;
+      }
+    }
+
+    /* Main Content Area */
+    .campaign-main {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      border: 1px solid var(--border-light);
+    }
+
+    .campaign-description {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(
+        135deg,
+        rgba(0, 192, 119, 0.05),
+        rgba(0, 150, 219, 0.05)
+      );
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 192, 119, 0.15);
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary-green);
+    }
+
+    .stat-value.secondary {
+      color: var(--primary-blue);
+    }
+
+    /* Organizer Info Card */
+    .organizer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 2rem 0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .organizer-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(
+        135deg,
+        var(--primary-green),
+        var(--primary-blue)
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .organizer-info {
+      flex: 1;
+    }
+
+    .organizer-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.25rem;
+    }
+
+    .organizer-name {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .organizer-contact {
+      font-size: 0.9rem;
+      color: var(--primary-green);
+    }
+
+    /* Progress Section */
+    .progress-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .progress-percentage {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-green);
     }
 
     .progress-bar-wrapper {
       position: relative;
       width: 100%;
-      height: 16px;
-      background: rgba(200, 200, 200, 0.3);
-      border-radius: 8px;
-      overflow: visible;
+      height: 20px;
+      background: rgba(200, 200, 200, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1rem 0;
     }
 
     .progress-fill {
@@ -31,9 +360,10 @@
       top: 0;
       height: 100%;
       background: linear-gradient(90deg, #00c077, #00e68a);
-      border-radius: 8px;
-      width: 0; /* Start at 0 for animation */
+      border-radius: 10px;
+      width: 0;
       animation: growBar 1.4s forwards;
+      box-shadow: 0 0 10px rgba(0, 192, 119, 0.5);
     }
 
     @keyframes growBar {
@@ -45,24 +375,335 @@
       }
     }
 
-    .progress-text {
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      color: var(--muted);
-      text-align: center;
-      font-weight: 600;
-    }
-
-    .goal-info {
+    .progress-amounts {
       display: flex;
       justify-content: space-between;
-      margin: 1rem 0;
+      margin-top: 1rem;
+    }
+
+    .progress-amount {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .progress-amount-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .progress-amount-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Sidebar - Sticky Donation Box */
+    .campaign-sidebar {
+      position: sticky;
+      top: 100px;
+      height: fit-content;
+    }
+
+    .donate-box {
+      background: var(--bg-card);
+      border: 2px solid var(--primary-green);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0, 192, 119, 0.15);
+    }
+
+    .donate-box h2 {
+      margin: 0 0 1.5rem 0;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .donate-input-group {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .donate-input-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    #donateAmount {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.25rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+
+    #donateAmount:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(0, 192, 119, 0.1);
+    }
+
+    .quick-amounts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .quick-amount-btn {
+      padding: 0.75rem;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .quick-amount-btn:hover {
+      background: var(--primary-green);
+      color: white;
+      border-color: var(--primary-green);
+      transform: translateY(-2px);
+    }
+
+    #donateBtn {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.125rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary-green));
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    #donateBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgb(0, 192, 118);
     }
 
     .fee-info {
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       color: #ff9800;
-      margin: 0.5rem 0;
+      text-align: center;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: rgba(255, 152, 0, 0.1);
+      border-radius: var(--radius-md);
+    }
+
+    /* Image Carousel */
+    .image-gallery {
+      margin: 2rem 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .gallery-container {
+      width: 100%;
+      height: 400px;
+      background: #f5f5f5;
+    }
+
+    .campaign-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-carousel {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem;
+      overflow-x: auto;
+      background: var(--bg-primary);
+    }
+
+    .carousel-thumbnail {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .carousel-thumbnail:hover,
+    .carousel-thumbnail.active {
+      border-color: var(--primary-green);
+      transform: scale(1.05);
+    }
+
+    /* Donation History */
+    .donation-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-top: 3rem;
+    }
+
+    .section-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 1.5rem 0;
+      color: var(--text-primary);
+    }
+
+    .donation-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .donation-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-light);
+      transition: background 0.3s ease;
+    }
+
+    .donation-item:last-child {
+      border-bottom: none;
+    }
+
+    .donation-item:hover {
+      background: rgba(0, 192, 119, 0.05);
+    }
+
+    .donation-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .donation-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(
+        135deg,
+        var(--primary-green),
+        var(--primary-blue)
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+    }
+
+    .donation-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .donation-donor {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .donation-time {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .donation-amount {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--primary-green);
+    }
+
+    .no-donations {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* Support Banner */
+    .support-banner {
+      background: linear-gradient(
+        135deg,
+        rgba(0, 192, 119, 0.1),
+        rgba(0, 150, 219, 0.1)
+      );
+      border: 1px solid var(--primary-green);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .support-banner h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+    }
+
+    .support-banner p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+    }
+
+    /* Share Section */
+    .share-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .share-title {
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .share-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border-light);
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .share-btn:hover {
+      background: var(--primary-green);
+      color: white;
+      transform: translateY(-2px);
     }
   </style>
   <body>
@@ -113,97 +754,181 @@
     </nav>
 
     <main class="container">
-      <h1 id="campaignTitle" data-testid="title-campaign">
-        Loading Campaign...
-      </h1>
-
-      <!-- Image Gallery -->
-      <div id="campaignGallery" class="image-gallery">
-        <div class="gallery-container">
-          <img
-            id="campaignImage"
-            class="campaign-image"
-            alt="Campaign Image"
-            data-testid="img-campaign-main"
-          />
-        </div>
-        <div id="imageCarousel" class="image-carousel" style="display: none">
-          <!-- Thumbnail images will be added here -->
-        </div>
-      </div>
-
-      <!-- Campaign Details -->
-      <div class="campaign-card-content">
-        <p
-          id="campaignDesc"
-          data-testid="text-campaign-description"
-          style="font-size: 1.125rem; line-height: 1.7; margin: 1.5rem 0"
-        ></p>
-
-        <div class="goal-info">
-          <div>
-            <strong>Organizer:</strong>
-            <span id="ownerName" data-testid="text-owner-name"></span>
-          </div>
-          <div>
-            <strong>Contact:</strong>
-            <span id="ownerContact" data-testid="text-owner-contact"></span>
-          </div>
-        </div>
-
-        <!-- Progress -->
-        <div class="progress-container">
-          <div class="progress-bar-wrapper">
-            <div id="progressBar" class="progress-fill" style="width: 0%"></div>
-          </div>
-          <div class="progress-text">
-            <span id="progressPercent" data-testid="text-progress-percent"
-              >0%</span
-            >
-          </div>
-        </div>
-
-        <div class="goal-info">
-          <span
-            ><strong>Goal:</strong>
-            <span id="goal" data-testid="text-campaign-goal">0</span> KPGT</span
-          >
-          <span
-            ><strong>Raised:</strong>
-            <span id="raised" data-testid="text-campaign-raised">0</span>
-            KPGT</span
-          >
-        </div>
-
-        <p id="feeInfo" class="fee-info"></p>
-      </div>
-
-      <!-- Donation Box -->
-      <div class="donate-box">
-        <h2 style="margin-bottom: 1rem">Make a Donation</h2>
-        <input
-          id="donateAmount"
-          type="number"
-          step="0.01"
-          placeholder="Enter amount in KPGT"
-          data-testid="input-donate-amount"
+      <!-- Hero Section with Image -->
+      <div class="campaign-hero">
+        <img
+          id="campaignImage"
+          class="campaign-hero-image"
+          alt="Campaign Image"
+          data-testid="img-campaign-main"
         />
-        <button
-          id="donateBtn"
-          class="btn-primary full-width"
-          data-testid="button-donate"
-        >
-          Donate Now
-        </button>
+        <div class="campaign-hero-overlay">
+          <h1 id="campaignTitle" data-testid="title-campaign">
+            Loading Campaign...
+          </h1>
+        </div>
       </div>
 
-      <!-- Donation History -->
-      <h2 class="section-title" style="margin-top: 3rem">Donation History</h2>
-      <ul id="donationList" class="donation-list" data-testid="list-donations">
-        <li class="no-donations">
-          No donations yet. Be the first to support this campaign!
-        </li>
-      </ul>
+      <!-- Two Column Layout -->
+      <div class="campaign-layout">
+        <!-- Main Content -->
+        <div class="campaign-content">
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Goal Amount</div>
+              <div class="stat-value">
+                <span id="goal" data-testid="text-campaign-goal">0</span> KPGT
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Amount Raised</div>
+              <div class="stat-value secondary">
+                <span id="raised" data-testid="text-campaign-raised">0</span>
+                KPGT
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Progress</div>
+              <div class="stat-value">
+                <span id="progressPercent" data-testid="text-progress-percent"
+                  >0%</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Section -->
+          <div class="progress-section">
+            <div class="progress-bar-wrapper">
+              <div
+                id="progressBar"
+                class="progress-fill"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div class="progress-amounts">
+              <div class="progress-amount">
+                <span class="progress-amount-label">Raised</span>
+                <span class="progress-amount-value">
+                  <span id="raisedAlt">0</span> KPGT
+                </span>
+              </div>
+              <div class="progress-amount">
+                <span class="progress-amount-label">Goal</span>
+                <span class="progress-amount-value">
+                  <span id="goalAlt">0</span> KPGT
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Support Banner -->
+          <div class="support-banner">
+            <h3>🎯 Help Us Reach Our Goal!</h3>
+            <p>Every contribution brings us closer to making a difference</p>
+          </div>
+
+          <!-- Main Content Card -->
+          <div class="campaign-main">
+            <h2 style="margin-top: 0">About This Campaign</h2>
+            <p
+              id="campaignDesc"
+              class="campaign-description"
+              data-testid="text-campaign-description"
+            ></p>
+
+            <!-- Organizer Card -->
+            <div class="organizer-card">
+              <div class="organizer-avatar">
+                <span id="organizerInitial">?</span>
+              </div>
+              <div class="organizer-info">
+                <div class="organizer-label">Campaign Organizer</div>
+                <div class="organizer-name">
+                  <span id="ownerName" data-testid="text-owner-name"></span>
+                </div>
+                <div class="organizer-contact">
+                  <span
+                    id="ownerContact"
+                    data-testid="text-owner-contact"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Image Gallery -->
+          <div id="campaignGallery" class="image-gallery" style="display: none">
+            <div id="imageCarousel" class="image-carousel">
+              <!-- Thumbnail images will be added here -->
+            </div>
+          </div>
+
+          <!-- Donation History -->
+          <div class="donation-section">
+            <h2 class="section-title">Recent Donations</h2>
+            <ul
+              id="donationList"
+              class="donation-list"
+              data-testid="list-donations"
+            >
+              <li class="no-donations">
+                No donations yet. Be the first to support this campaign!
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Sidebar - Sticky Donation Box -->
+        <div class="campaign-sidebar">
+          <div class="donate-box">
+            <h2>Make a Donation</h2>
+
+            <div class="donate-input-group">
+              <label class="donate-input-label">Enter Amount (KPGT)</label>
+              <input
+                id="donateAmount"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                data-testid="input-donate-amount"
+              />
+            </div>
+
+            <div class="quick-amounts">
+              <button class="quick-amount-btn" onclick="setQuickAmount(10)">
+                10
+              </button>
+              <button class="quick-amount-btn" onclick="setQuickAmount(50)">
+                50
+              </button>
+              <button class="quick-amount-btn" onclick="setQuickAmount(100)">
+                100
+              </button>
+              <button class="quick-amount-btn" onclick="setQuickAmount(250)">
+                250
+              </button>
+              <button class="quick-amount-btn" onclick="setQuickAmount(500)">
+                500
+              </button>
+              <button class="quick-amount-btn" onclick="setQuickAmount(1000)">
+                1000
+              </button>
+            </div>
+
+            <p id="feeInfo" class="fee-info"></p>
+
+            <button
+              id="donateBtn"
+              class="btn-primary full-width"
+              data-testid="button-donate"
+            >
+              Donate Now
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- FOOTER -->
@@ -220,6 +945,50 @@
     <script>
       window.process = { env: { NODE_ENV: "production" } };
       window.global = window;
+
+      // Quick amount setter function
+      function setQuickAmount(amount) {
+        document.getElementById("donateAmount").value = amount;
+      }
+
+      // Update organizer initial when name is loaded
+      function updateOrganizerInitial(name) {
+        const initial = name ? name.charAt(0).toUpperCase() : "?";
+        document.getElementById("organizerInitial").textContent = initial;
+      }
+
+      // Sync the duplicate progress displays
+      function syncProgressDisplays() {
+        const raised = document.getElementById("raised").textContent;
+        const goal = document.getElementById("goal").textContent;
+        document.getElementById("raisedAlt").textContent = raised;
+        document.getElementById("goalAlt").textContent = goal;
+      }
+
+      // Observer to watch for changes in the original elements
+      const observer = new MutationObserver(() => {
+        syncProgressDisplays();
+        const ownerName = document.getElementById("ownerName").textContent;
+        if (ownerName) updateOrganizerInitial(ownerName);
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        observer.observe(document.getElementById("raised"), {
+          childList: true,
+          characterData: true,
+          subtree: true,
+        });
+        observer.observe(document.getElementById("goal"), {
+          childList: true,
+          characterData: true,
+          subtree: true,
+        });
+        observer.observe(document.getElementById("ownerName"), {
+          childList: true,
+          characterData: true,
+          subtree: true,
+        });
+      });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
