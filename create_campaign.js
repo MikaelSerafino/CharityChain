@@ -317,7 +317,7 @@
 
       // Redirect
       setTimeout(() => {
-        window.location.href = "index.html";
+        window.location.href = "home.html";
       }, 1200);
     } catch (err) {
       console.error("Create campaign error:", err);

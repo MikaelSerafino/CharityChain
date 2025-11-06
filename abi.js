@@ -1,5 +1,5 @@
 // abi.js
-const contractAddress = "0xc828ee8A6633Eee9d77F9a13484Ba719BCb2801F";
+const contractAddress = "0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8";
 const contractABI = [
 	{
 		"inputs": [
@@ -183,6 +183,19 @@ const contractABI = [
 			}
 		],
 		"name": "updatePlatformFee",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdraw",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -567,6 +580,19 @@ const contractABI = [
 				"internalType": "struct Campaign",
 				"name": "",
 				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getContractBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",

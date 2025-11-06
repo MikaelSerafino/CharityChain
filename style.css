@@ -429,7 +429,7 @@ html {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 0;
+  padding: 9px;
 }
 
 .campaign-card:hover {
