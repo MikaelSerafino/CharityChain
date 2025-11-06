@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+      default-src 'self';
+      connect-src 'self' https://rpc1.paseo.mandalachain.io wss://rpc1.paseo.mandalachain.io https://rpc2.paseo.mandalachain.io https://rpc.mandalachain.io https://api.coingecko.com https://min-api.cryptocompare.com;
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https: http:;
+    "
+    />
+
+    <title>CharityChain | Blockchain Charity Platform</title>
+    <meta
+      name="description"
+      content="CharityChain - A transparent blockchain-powered charity platform. Create campaigns, donate with KPGT, and make a real difference in people's lives."
+    />
+
+    <!-- Open Graph Tags -->
+    <meta
+      property="og:title"
+      content="CharityChain - Blockchain Charity Platform"
+    />
+    <meta
+      property="og:description"
+      content="Create transparent charity campaigns and donate with blockchain technology"
+    />
+    <meta property="og:type" content="website" />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar">
+      <div class="nav-left">
+        <a href="index.html" class="logo" data-testid="link-home"
+          >CharityChain</a
+        >
+        <a href="home.html" class="nav-link active">Home</a>
+        <a href="create.html" class="nav-link">Create</a>
+        <a href="completed.html" class="nav-link">Completed</a>
+      </div>
+
+      <div class="nav-right">
+        <button
+          id="modeToggle"
+          class="btn small secondary"
+          data-testid="button-theme-toggle"
+        >
+          Dark Mode
+        </button>
+        <button
+          id="connectWallet"
+          class="btn small"
+          data-testid="button-connect-wallet"
+        >
+          Connect Wallet
+        </button>
+        <button
+          id="disconnectWallet"
+          class="btn small secondary"
+          style="display: none"
+          data-testid="button-disconnect-wallet"
+        >
+          Disconnect
+        </button>
+      </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1>Together, We Can Make a <span>Difference</span></h1>
+        <p>
+          Every small act of kindness has the power to create a big impact.
+          CharityChain uses blockchain technology to bring transparency and
+          trust to charitable giving. Donate with confidence, create campaigns
+          with ease, and change lives together.
+        </p>
+        <a
+          href="create.html"
+          class="hero-btn"
+          data-testid="link-start-campaign"
+        >
+          Start a Campaign
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path
+              d="M7.5 15L12.5 10L7.5 5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Trust Badges -->
+      <div
+        style="
+          display: flex;
+          gap: 2rem;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin-top: 2rem;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+          "
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--primary-green)"
+            stroke-width="2"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span style="font-weight: 600">100% Transparent</span>
+        </div>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+          "
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--primary-green)"
+            stroke-width="2"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <span style="font-weight: 600">Secure Blockchain</span>
+        </div>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+          "
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--primary-green)"
+            stroke-width="2"
+          >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          <span style="font-weight: 600">Verified Campaigns</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+      <!-- STATS BAR -->
+      <div class="stats-bar">
+        <div data-testid="stat-total-raised">
+          <div>Total Raised</div>
+          <span id="totalRaised" data-testid="text-total-raised">0</span>
+          <div class="small">KPGT</div>
+        </div>
+        <div data-testid="stat-total-campaigns">
+          <div>Active Campaigns</div>
+          <span id="totalCampaigns" data-testid="text-total-campaigns">0</span>
+          <div class="small">Campaigns</div>
+        </div>
+      </div>
+
+      <!-- SEARCH AND FILTER SECTION -->
+      <div class="search-container">
+        <div class="search-bar">
+          <input
+            type="text"
+            class="search-input"
+            id="searchInput"
+            placeholder="🔍 Search campaigns by title or description..."
+          />
+          <button class="search-btn" onclick="filterCampaigns()">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            Search
+          </button>
+        </div>
+
+        <div class="filter-tabs">
+          <button
+            class="filter-tab active"
+            data-filter="all"
+            onclick="setFilter('all')"
+          >
+            🌟 All
+          </button>
+          <button
+            class="filter-tab"
+            data-filter="medical"
+            onclick="setFilter('medical')"
+          >
+            🏥 Medical
+          </button>
+          <button
+            class="filter-tab"
+            data-filter="education"
+            onclick="setFilter('education')"
+          >
+            🎓 Education
+          </button>
+          <button
+            class="filter-tab"
+            data-filter="emergency"
+            onclick="setFilter('emergency')"
+          >
+            🚨 Emergency
+          </button>
+          <button
+            class="filter-tab"
+            data-filter="community"
+            onclick="setFilter('community')"
+          >
+            🏘 Community
+          </button>
+          <button
+            class="filter-tab"
+            data-filter="other"
+            onclick="setFilter('other')"
+          >
+            💡 Other
+          </button>
+        </div>
+      </div>
+
+      <h2 class="section-title" data-testid="title-active-campaigns">
+        Active Campaigns
+      </h2>
+
+      <div id="campaignList" class="campaign-grid" data-testid="grid-campaigns">
+        <!-- Campaigns will be loaded here by app.js -->
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div id="emptyState" class="empty-state" style="display: none">
+        <div class="empty-state-icon">🔍</div>
+        <h3 style="color: var(--text-primary); margin-bottom: 0.5rem">
+          No Campaigns Found
+        </h3>
+        <p style="margin-bottom: 1.5rem">
+          Try adjusting your filters or search terms
+        </p>
+        <button class="btn primary" onclick="resetFilters()">
+          Reset Filters
+        </button>
+      </div>
+
+      <!-- HOW TO HELP SECTION -->
+      <div class="how-to-help">
+        <h2
+          style="
+            text-align: center;
+            color: var(--text-primary);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+          "
+        >
+          How You Can Help
+        </h2>
+        <p
+          style="
+            text-align: center;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+          "
+        >
+          Making a difference is easy with CharityChain. Choose your path to
+          impact lives today.
+        </p>
+
+        <div class="help-steps">
+          <div class="help-step">
+            <div class="step-number">1</div>
+            <h3 style="color: var(--primary-green); margin-bottom: 0.75rem">
+              Connect Wallet
+            </h3>
+            <p
+              style="color: var(--text-secondary); margin: 0; line-height: 1.6"
+            >
+              Link your Web3 wallet securely in seconds. Your gateway to
+              transparent giving.
+            </p>
+          </div>
+          <div class="help-step">
+            <div class="step-number">2</div>
+            <h3 style="color: var(--primary-green); margin-bottom: 0.75rem">
+              Choose a Campaign
+            </h3>
+            <p
+              style="color: var(--text-secondary); margin: 0; line-height: 1.6"
+            >
+              Browse verified campaigns and find causes that resonate with you.
+            </p>
+          </div>
+          <div class="help-step">
+            <div class="step-number">3</div>
+            <h3 style="color: var(--primary-green); margin-bottom: 0.75rem">
+              Donate with KPGT
+            </h3>
+            <p
+              style="color: var(--text-secondary); margin: 0; line-height: 1.6"
+            >
+              Make your contribution and watch your impact tracked on the
+              blockchain.
+            </p>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2.5rem">
+          <p
+            style="
+              color: var(--text-muted);
+              font-size: 0.95rem;
+              margin-bottom: 1rem;
+            "
+          >
+            Want to raise funds for your own cause?
+          </p>
+          <a href="create.html" class="btn primary">Create Your Campaign</a>
+        </div>
+      </div>
+
+      <!-- IMPACT STORIES TEASER -->
+      <div
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(0, 192, 119, 0.05) 0%,
+            rgba(0, 230, 138, 0.08) 100%
+          );
+          border: 1px solid var(--border-light);
+          border-radius: var(--radius-lg);
+          padding: 3rem 2rem;
+          text-align: center;
+          margin-top: 3rem;
+        "
+      >
+        <h3
+          style="
+            color: var(--text-primary);
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+          "
+        >
+          Real People, Real Impact
+        </h3>
+        <p
+          style="
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+          "
+        >
+          Every campaign on CharityChain represents a story, a dream, or an
+          urgent need. Your contribution, no matter the size, creates ripples of
+          positive change.
+        </p>
+
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+          "
+        >
+          <div>
+            <div
+              style="
+                font-size: 2.5rem;
+                font-weight: 800;
+                color: var(--primary-green);
+              "
+            >
+              98%
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.9rem">
+              Goes to Causes
+            </div>
+          </div>
+          <div>
+            <div
+              style="
+                font-size: 2.5rem;
+                font-weight: 800;
+                color: var(--primary-green);
+              "
+            >
+              < 5s
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.9rem">
+              Transaction Time
+            </div>
+          </div>
+          <div>
+            <div
+              style="
+                font-size: 2.5rem;
+                font-weight: 800;
+                color: var(--primary-green);
+              "
+            >
+              100%
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.9rem">
+              Transparent
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer"></div>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div
+      id="toastContainer"
+      class="toast-container"
+      data-testid="container-toasts"
+    ></div>
+
+    <!-- Polyfills -->
+    <script>
+      window.process = { env: { NODE_ENV: "production" } };
+      window.global = window;
+      window.Buffer = window.Buffer || { isBuffer: () => false };
+    </script>
+
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
+
+    <!-- Project scripts -->
+    <script src="abi.js"></script>
+    <script src="theme.js"></script>
+    <script src="app.js"></script>
+
+    <!-- Search and Filter Script -->
+    <script>
+      const categoryDisplayMap = {
+        medical: "🏥 Medical",
+        education: "🎓 Education",
+        emergency: "🚨 Emergency",
+        community: "🏘️ Community",
+        other: "💡 Other",
+        all: "🌟 All", // For the "All" tab
+      };
+
+      let currentFilter = "all";
+
+      function setFilter(filter) {
+        currentFilter = filter;
+
+        // Update active state on tabs
+        document.querySelectorAll(".filter-tab").forEach((tab) => {
+          tab.classList.remove("active");
+          if (tab.dataset.filter === filter) {
+            tab.classList.add("active");
+          }
+        });
+
+        filterCampaigns();
+      }
+
+      function filterCampaigns() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const campaignGrid = document.getElementById("campaignList");
+        const emptyState = document.getElementById("emptyState");
+        const cards = campaignGrid.querySelectorAll(".campaign-card");
+
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          const title =
+            card.querySelector("h3")?.textContent.toLowerCase() || "";
+          const description =
+            card.querySelector("p")?.textContent.toLowerCase() || "";
+          const category = card.dataset.category || "other";
+
+          const matchesSearch =
+            !searchTerm ||
+            title.includes(searchTerm) ||
+            description.includes(searchTerm);
+          const matchesFilter =
+            currentFilter === "all" || category === currentFilter;
+
+          if (matchesSearch && matchesFilter) {
+            card.style.display = "flex";
+            visibleCount++;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        // Show/hide empty state
+        if (visibleCount === 0 && cards.length > 0) {
+          emptyState.style.display = "block";
+          campaignGrid.style.display = "none";
+        } else {
+          emptyState.style.display = "none";
+          campaignGrid.style.display = "grid";
+        }
+      }
+
+      function resetFilters() {
+        document.getElementById("searchInput").value = "";
+        setFilter("all");
+      }
+
+      // Add search on Enter key
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+          searchInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              filterCampaigns();
+            }
+          });
+
+          // Real-time search as user types
+          searchInput.addEventListener("input", function () {
+            filterCampaigns();
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
