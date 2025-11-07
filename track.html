@@ -194,701 +194,263 @@
       const RPC_URL = "https://rpc1.paseo.mandalachain.io";
       const EXPLORER_URL = "https://explorer.mandalachain.io";
 
-      const contractABI = [
-        {
-          inputs: [
+      let web3;
+      let contract;
+
+      window.addEventListener("load", async () => {
+        if (window.ethereum) {
+          web3 = new Web3(window.ethereum);
+          await window.ethereum.enable();
+
+          const contractAddress = "0x32d746F27890732a8a2ff821276b7225b8e469f9";
+          const contractABI = [
             {
-              internalType: "address",
-              name: "_platformWallet",
-              type: "address",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "campaignId",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "string",
-              name: "title",
-              type: "string",
-            },
-            {
-              indexed: false,
-              internalType: "address",
-              name: "owner",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "platformFee",
-              type: "uint256",
-            },
-          ],
-          name: "CampaignCreated",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "campaignId",
-              type: "uint256",
-            },
-          ],
-          name: "CampaignFinished",
-          type: "event",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
-              name: "_title",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "_desc",
-              type: "string",
-            },
-            {
-              internalType: "string[]",
-              name: "_images",
-              type: "string[]",
-            },
-            {
-              internalType: "uint256",
-              name: "_goal",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "_ownerName",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "_contact",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "_category",
-              type: "string",
-            },
-            {
-              internalType: "address",
-              name: "_wallet",
-              type: "address",
-            },
-          ],
-          name: "createCampaign",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_id",
-              type: "uint256",
-            },
-          ],
-          name: "donate",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "campaignId",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "address",
-              name: "donor",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "platformFee",
-              type: "uint256",
-            },
-          ],
-          name: "DonationReceived",
-          type: "event",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_id",
-              type: "uint256",
-            },
-          ],
-          name: "finishCampaign",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "campaignId",
-              type: "uint256",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "to",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "FundsWithdrawn",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "newFeePercent",
-              type: "uint256",
-            },
-          ],
-          name: "PlatformFeeUpdated",
-          type: "event",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_feePercent",
-              type: "uint256",
-            },
-          ],
-          name: "updatePlatformFee",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_id",
-              type: "uint256",
-            },
-          ],
-          name: "withdrawFunds",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "campaignCount",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "campaigns",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "id",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "title",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "description",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "goal",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "totalRaised",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "platformFee",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "ownerName",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "ownerContact",
-              type: "string",
-            },
-            {
-              internalType: "address",
-              name: "ownerWallet",
-              type: "address",
-            },
-            {
-              internalType: "bool",
-              name: "active",
-              type: "bool",
-            },
-            {
-              internalType: "bool",
-              name: "finished",
-              type: "bool",
-            },
-            {
-              internalType: "uint256",
-              name: "createdAt",
-              type: "uint256",
-            },
-            {
-              internalType: "string",
-              name: "category",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_offset",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_limit",
-              type: "uint256",
-            },
-          ],
-          name: "getActiveCampaignsPaginated",
-          outputs: [
-            {
-              components: [
+              inputs: [
                 {
+                  internalType: "address",
+                  name: "_platformWallet",
+                  type: "address",
+                },
+              ],
+              stateMutability: "nonpayable",
+              type: "constructor",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
                   internalType: "uint256",
-                  name: "id",
+                  name: "campaignId",
                   type: "uint256",
                 },
                 {
+                  indexed: false,
                   internalType: "string",
                   name: "title",
                   type: "string",
                 },
                 {
-                  internalType: "string",
-                  name: "description",
-                  type: "string",
+                  indexed: false,
+                  internalType: "address",
+                  name: "owner",
+                  type: "address",
                 },
                 {
-                  internalType: "string[]",
-                  name: "imageURLs",
-                  type: "string[]",
-                },
-                {
-                  internalType: "uint256",
-                  name: "goal",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "totalRaised",
-                  type: "uint256",
-                },
-                {
+                  indexed: false,
                   internalType: "uint256",
                   name: "platformFee",
                   type: "uint256",
                 },
+              ],
+              name: "CampaignCreated",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
                 {
-                  internalType: "string",
-                  name: "ownerName",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "ownerContact",
-                  type: "string",
-                },
-                {
-                  internalType: "address",
-                  name: "ownerWallet",
-                  type: "address",
-                },
-                {
-                  internalType: "bool",
-                  name: "active",
-                  type: "bool",
-                },
-                {
-                  internalType: "bool",
-                  name: "finished",
-                  type: "bool",
-                },
-                {
+                  indexed: true,
                   internalType: "uint256",
-                  name: "createdAt",
+                  name: "campaignId",
                   type: "uint256",
-                },
-                {
-                  internalType: "string",
-                  name: "category",
-                  type: "string",
                 },
               ],
-              internalType: "struct Campaign[]",
-              name: "",
-              type: "tuple[]",
+              name: "CampaignFinished",
+              type: "event",
             },
             {
-              internalType: "uint256",
-              name: "total",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_offset",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "_limit",
-              type: "uint256",
-            },
-          ],
-          name: "getAllCampaignsPaginated",
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: "uint256",
-                  name: "id",
-                  type: "uint256",
-                },
+              inputs: [
                 {
                   internalType: "string",
-                  name: "title",
+                  name: "_title",
                   type: "string",
                 },
                 {
                   internalType: "string",
-                  name: "description",
+                  name: "_desc",
                   type: "string",
                 },
                 {
                   internalType: "string[]",
-                  name: "imageURLs",
+                  name: "_images",
                   type: "string[]",
                 },
                 {
                   internalType: "uint256",
-                  name: "goal",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "totalRaised",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "platformFee",
+                  name: "_goal",
                   type: "uint256",
                 },
                 {
                   internalType: "string",
-                  name: "ownerName",
+                  name: "_ownerName",
                   type: "string",
                 },
                 {
                   internalType: "string",
-                  name: "ownerContact",
+                  name: "_contact",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "_category",
                   type: "string",
                 },
                 {
                   internalType: "address",
-                  name: "ownerWallet",
+                  name: "_wallet",
                   type: "address",
                 },
-                {
-                  internalType: "bool",
-                  name: "active",
-                  type: "bool",
-                },
-                {
-                  internalType: "bool",
-                  name: "finished",
-                  type: "bool",
-                },
+              ],
+              name: "createCampaign",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
                 {
                   internalType: "uint256",
-                  name: "createdAt",
+                  name: "_id",
                   type: "uint256",
-                },
-                {
-                  internalType: "string",
-                  name: "category",
-                  type: "string",
                 },
               ],
-              internalType: "struct Campaign[]",
-              name: "",
-              type: "tuple[]",
+              name: "donate",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
             },
             {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_id",
-              type: "uint256",
-            },
-          ],
-          name: "getCampaign",
-          outputs: [
-            {
-              components: [
+              anonymous: false,
+              inputs: [
                 {
+                  indexed: true,
                   internalType: "uint256",
-                  name: "id",
+                  name: "campaignId",
                   type: "uint256",
                 },
                 {
-                  internalType: "string",
-                  name: "title",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "description",
-                  type: "string",
-                },
-                {
-                  internalType: "string[]",
-                  name: "imageURLs",
-                  type: "string[]",
-                },
-                {
-                  internalType: "uint256",
-                  name: "goal",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "totalRaised",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "platformFee",
-                  type: "uint256",
-                },
-                {
-                  internalType: "string",
-                  name: "ownerName",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "ownerContact",
-                  type: "string",
-                },
-                {
-                  internalType: "address",
-                  name: "ownerWallet",
-                  type: "address",
-                },
-                {
-                  internalType: "bool",
-                  name: "active",
-                  type: "bool",
-                },
-                {
-                  internalType: "bool",
-                  name: "finished",
-                  type: "bool",
-                },
-                {
-                  internalType: "uint256",
-                  name: "createdAt",
-                  type: "uint256",
-                },
-                {
-                  internalType: "string",
-                  name: "category",
-                  type: "string",
-                },
-              ],
-              internalType: "struct Campaign",
-              name: "",
-              type: "tuple",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getContractBalance",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_id",
-              type: "uint256",
-            },
-          ],
-          name: "getDonationCount",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_id",
-              type: "uint256",
-            },
-          ],
-          name: "getDonations",
-          outputs: [
-            {
-              components: [
-                {
+                  indexed: false,
                   internalType: "address",
                   name: "donor",
                   type: "address",
                 },
                 {
+                  indexed: false,
                   internalType: "uint256",
                   name: "amount",
                   type: "uint256",
                 },
                 {
+                  indexed: false,
                   internalType: "uint256",
-                  name: "timestamp",
+                  name: "platformFee",
                   type: "uint256",
                 },
               ],
-              internalType: "struct Donation[]",
-              name: "",
-              type: "tuple[]",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "_offset",
-              type: "uint256",
+              name: "DonationReceived",
+              type: "event",
             },
             {
-              internalType: "uint256",
-              name: "_limit",
-              type: "uint256",
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_id",
+                  type: "uint256",
+                },
+              ],
+              name: "finishCampaign",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
             },
-          ],
-          name: "getFinishedCampaignsPaginated",
-          outputs: [
             {
-              components: [
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "uint256",
+                  name: "campaignId",
+                  type: "uint256",
+                },
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "to",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "amount",
+                  type: "uint256",
+                },
+              ],
+              name: "FundsWithdrawn",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "newFeePercent",
+                  type: "uint256",
+                },
+              ],
+              name: "PlatformFeeUpdated",
+              type: "event",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_feePercent",
+                  type: "uint256",
+                },
+              ],
+              name: "updatePlatformFee",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_id",
+                  type: "uint256",
+                },
+              ],
+              name: "withdrawFunds",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "campaignCount",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              name: "campaigns",
+              outputs: [
                 {
                   internalType: "uint256",
                   name: "id",
@@ -903,11 +465,6 @@
                   internalType: "string",
                   name: "description",
                   type: "string",
-                },
-                {
-                  internalType: "string[]",
-                  name: "imageURLs",
-                  type: "string[]",
                 },
                 {
                   internalType: "uint256",
@@ -960,346 +517,579 @@
                   type: "string",
                 },
               ],
-              internalType: "struct Campaign[]",
-              name: "",
-              type: "tuple[]",
+              stateMutability: "view",
+              type: "function",
             },
             {
-              internalType: "uint256",
-              name: "total",
-              type: "uint256",
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_offset",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "_limit",
+                  type: "uint256",
+                },
+              ],
+              name: "getActiveCampaignsPaginated",
+              outputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "title",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "description",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string[]",
+                      name: "imageURLs",
+                      type: "string[]",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "goal",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "totalRaised",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "platformFee",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "ownerName",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "ownerContact",
+                      type: "string",
+                    },
+                    {
+                      internalType: "address",
+                      name: "ownerWallet",
+                      type: "address",
+                    },
+                    {
+                      internalType: "bool",
+                      name: "active",
+                      type: "bool",
+                    },
+                    {
+                      internalType: "bool",
+                      name: "finished",
+                      type: "bool",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "createdAt",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "category",
+                      type: "string",
+                    },
+                  ],
+                  internalType: "struct Campaign[]",
+                  name: "",
+                  type: "tuple[]",
+                },
+                {
+                  internalType: "uint256",
+                  name: "total",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
             },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
             {
-              internalType: "uint256",
-              name: "_amount",
-              type: "uint256",
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_offset",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "_limit",
+                  type: "uint256",
+                },
+              ],
+              name: "getAllCampaignsPaginated",
+              outputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "title",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "description",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string[]",
+                      name: "imageURLs",
+                      type: "string[]",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "goal",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "totalRaised",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "platformFee",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "ownerName",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "ownerContact",
+                      type: "string",
+                    },
+                    {
+                      internalType: "address",
+                      name: "ownerWallet",
+                      type: "address",
+                    },
+                    {
+                      internalType: "bool",
+                      name: "active",
+                      type: "bool",
+                    },
+                    {
+                      internalType: "bool",
+                      name: "finished",
+                      type: "bool",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "createdAt",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "category",
+                      type: "string",
+                    },
+                  ],
+                  internalType: "struct Campaign[]",
+                  name: "",
+                  type: "tuple[]",
+                },
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
             },
-          ],
-          name: "getPlatformFeeForAmount",
-          outputs: [
             {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_id",
+                  type: "uint256",
+                },
+              ],
+              name: "getCampaign",
+              outputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "title",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "description",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string[]",
+                      name: "imageURLs",
+                      type: "string[]",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "goal",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "totalRaised",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "platformFee",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "ownerName",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "ownerContact",
+                      type: "string",
+                    },
+                    {
+                      internalType: "address",
+                      name: "ownerWallet",
+                      type: "address",
+                    },
+                    {
+                      internalType: "bool",
+                      name: "active",
+                      type: "bool",
+                    },
+                    {
+                      internalType: "bool",
+                      name: "finished",
+                      type: "bool",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "createdAt",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "category",
+                      type: "string",
+                    },
+                  ],
+                  internalType: "struct Campaign",
+                  name: "",
+                  type: "tuple",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
             },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getPlatformFeePercent",
-          outputs: [
             {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
+              inputs: [],
+              name: "getContractBalance",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
             },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
             {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_id",
+                  type: "uint256",
+                },
+              ],
+              name: "getDonationCount",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
             },
-          ],
-          name: "pendingWithdrawals",
-          outputs: [
             {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_id",
+                  type: "uint256",
+                },
+              ],
+              name: "getDonations",
+              outputs: [
+                {
+                  components: [
+                    {
+                      internalType: "address",
+                      name: "donor",
+                      type: "address",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "amount",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "timestamp",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct Donation[]",
+                  name: "",
+                  type: "tuple[]",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
             },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "platformFeePercent",
-          outputs: [
             {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_offset",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "_limit",
+                  type: "uint256",
+                },
+              ],
+              name: "getFinishedCampaignsPaginated",
+              outputs: [
+                {
+                  components: [
+                    {
+                      internalType: "uint256",
+                      name: "id",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "title",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "description",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string[]",
+                      name: "imageURLs",
+                      type: "string[]",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "goal",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "totalRaised",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "platformFee",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "ownerName",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "ownerContact",
+                      type: "string",
+                    },
+                    {
+                      internalType: "address",
+                      name: "ownerWallet",
+                      type: "address",
+                    },
+                    {
+                      internalType: "bool",
+                      name: "active",
+                      type: "bool",
+                    },
+                    {
+                      internalType: "bool",
+                      name: "finished",
+                      type: "bool",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "createdAt",
+                      type: "uint256",
+                    },
+                    {
+                      internalType: "string",
+                      name: "category",
+                      type: "string",
+                    },
+                  ],
+                  internalType: "struct Campaign[]",
+                  name: "",
+                  type: "tuple[]",
+                },
+                {
+                  internalType: "uint256",
+                  name: "total",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
             },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "platformWallet",
-          outputs: [
             {
-              internalType: "address",
-              name: "",
-              type: "address",
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "_amount",
+                  type: "uint256",
+                },
+              ],
+              name: "getPlatformFeeForAmount",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
             },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-      ];
+            {
+              inputs: [],
+              name: "getPlatformFeePercent",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              name: "pendingWithdrawals",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "platformFeePercent",
+              outputs: [
+                {
+                  internalType: "uint256",
+                  name: "",
+                  type: "uint256",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "platformWallet",
+              outputs: [
+                {
+                  internalType: "address",
+                  name: "",
+                  type: "address",
+                },
+              ],
+              stateMutability: "view",
+              type: "function",
+            },
+          ];
+
+          contract = new web3.eth.Contract(contractABI, contractAddress);
+          console.log("✅ Contract loaded:", contractAddress);
+        } else {
+          alert("Please install MetaMask to use this tracker.");
+        }
+      });
 
       async function trackMoneyFlow() {
-        const resultDiv = document.getElementById("result");
-        resultDiv.innerHTML =
-          '<div style="text-align: center; padding: 30px;">🔄 Analyzing money flow...</div>';
-
         try {
           const campaignId = document.getElementById("campaignId").value;
-          const contractAddress =
-            document.getElementById("contractAddress").value;
+          if (!campaignId) {
+            alert("Please enter a campaign ID first.");
+            return;
+          }
 
-          const web3 = new Web3(RPC_URL);
-          const contract = new web3.eth.Contract(minimalABI, contractAddress);
+          console.log("Tracking campaign:", campaignId);
 
-          // Get campaign details
-          const campaign = await contract.methods
-            .getCampaign(campaignId)
-            .call();
+          const campaign = await contract.methods.campaigns(campaignId).call();
+          console.log("Campaign data:", campaign);
+
           const platformWallet = await contract.methods.platformWallet().call();
-          const platformFeePercent = await contract.methods
-            .platformFeePercent()
-            .call();
-          const pending = await contract.methods
-            .pendingWithdrawals(campaignId)
-            .call();
-          const contractBalance = await web3.eth.getBalance(contractAddress);
+          console.log("Platform wallet:", platformWallet);
 
-          let html = `
-                <div class="flow-item">
-                    <h3>📊 Campaign Overview: ${campaign.title}</h3>
-                    <table>
-                        <tr><td><strong>Campaign ID:</strong></td><td>#${campaignId}</td></tr>
-                        <tr><td><strong>Goal:</strong></td><td><span class="amount">${web3.utils.fromWei(
-                          campaign.goal,
-                          "ether"
-                        )} KPGT</span></td></tr>
-                        <tr><td><strong>Total Raised:</strong></td><td><span class="amount">${web3.utils.fromWei(
-                          campaign.totalRaised,
-                          "ether"
-                        )} KPGT</span></td></tr>
-                        <tr><td><strong>Owner:</strong></td><td><a href="${EXPLORER_URL}/address/${
-            campaign.ownerWallet
-          }" target="_blank" class="link">${campaign.ownerWallet}</a></td></tr>
-                        <tr><td><strong>Is Finished:</strong></td><td>${
-                          campaign.finished ? "✅ Yes" : "❌ No"
-                        }</td></tr>
-                        <tr><td><strong>Pending Withdrawals:</strong></td><td><span class="amount">${web3.utils.fromWei(
-                          pending,
-                          "ether"
-                        )} KPGT</span></td></tr>
-                    </table>
-                </div>
-
-                <div class="flow-item">
-                    <h3>⚙️ Platform Settings</h3>
-                    <table>
-                        <tr><td><strong>Platform Wallet:</strong></td><td><a href="${EXPLORER_URL}/address/${platformWallet}" target="_blank" class="link">${platformWallet}</a></td></tr>
-                        <tr><td><strong>Platform Fee:</strong></td><td>${
-                          platformFeePercent / 100
-                        }%</td></tr>
-                        <tr><td><strong>Contract Balance:</strong></td><td><span class="amount">${web3.utils.fromWei(
-                          contractBalance,
-                          "ether"
-                        )} KPGT</span></td></tr>
-                    </table>
-                </div>
-                `;
-
-          // Get donation events
-          html += "<h3>💸 Donation Flow Analysis</h3>";
-
-          try {
-            const donationEvents = await contract.getPastEvents(
-              "DonationReceived",
-              {
-                filter: { campaignId: campaignId },
-                fromBlock: 0,
-                toBlock: "latest",
-              }
-            );
-
-            if (donationEvents.length > 0) {
-              let totalDonated = 0;
-              let totalPlatformFees = 0;
-
-              html += `<div class="info"><strong class="success">✅ Found ${donationEvents.length} donation(s)</strong></div>`;
-
-              html +=
-                "<table><thead><tr><th>Donor</th><th>Amount</th><th>Platform Fee</th><th>Net to Campaign</th><th>Tx Hash</th></tr></thead><tbody>";
-
-              for (let event of donationEvents) {
-                const amount = parseFloat(
-                  web3.utils.fromWei(event.returnValues.amount, "ether")
-                );
-                const fee = parseFloat(
-                  web3.utils.fromWei(event.returnValues.platformFee, "ether")
-                );
-                const netAmount = amount - fee;
-
-                totalDonated += amount;
-                totalPlatformFees += fee;
-
-                html += `
-                            <tr>
-                                <td class="address">${event.returnValues.donor.slice(
-                                  0,
-                                  8
-                                )}...${event.returnValues.donor.slice(-6)}</td>
-                                <td class="amount">${amount.toFixed(
-                                  4
-                                )} KPGT</td>
-                                <td style="color: #ff9800;">${fee.toFixed(
-                                  4
-                                )} KPGT</td>
-                                <td style="color: #00e68a;">${netAmount.toFixed(
-                                  4
-                                )} KPGT</td>
-                                <td><a href="${EXPLORER_URL}/tx/${
-                  event.transactionHash
-                }" target="_blank" class="link">View Tx</a></td>
-                            </tr>
-                            `;
-              }
-
-              html += "</tbody></table>";
-
-              // Summary
-              html += `
-                        <div class="flow-item">
-                            <h3>📈 Money Flow Summary</h3>
-                            <div class="money-flow">
-                                <div>
-                                    <strong>Total Donated:</strong><br>
-                                    <span class="amount">${totalDonated.toFixed(
-                                      4
-                                    )} KPGT</span>
-                                </div>
-                                <div class="arrow">→</div>
-                                <div>
-                                    <strong>Platform Fees:</strong><br>
-                                    <span style="color: #ff9800; font-size: 18px; font-weight: bold;">${totalPlatformFees.toFixed(
-                                      4
-                                    )} KPGT</span><br>
-                                    <small>Sent to: <span class="address">${platformWallet}</span></small>
-                                </div>
-                                <div class="arrow">→</div>
-                                <div>
-                                    <strong>Net to Campaign:</strong><br>
-                                    <span style="color: #00e68a; font-size: 18px; font-weight: bold;">${(
-                                      totalDonated - totalPlatformFees
-                                    ).toFixed(4)} KPGT</span>
-                                </div>
-                            </div>
-                        </div>
-                        `;
-            } else {
-              html +=
-                '<div class="warning"><strong>⚠️ No donation events found</strong></div>';
-            }
-          } catch (err) {
-            html += `<div class="error"><strong>❌ Error fetching donation events:</strong><br>${err.message}</div>`;
-          }
-
-          // Check withdrawal events
-          html += "<h3>💰 Withdrawal Events</h3>";
-
-          try {
-            const withdrawEvents = await contract.getPastEvents(
-              "FundsWithdrawn",
-              {
-                filter: { campaignId: campaignId },
-                fromBlock: 0,
-                toBlock: "latest",
-              }
-            );
-
-            if (withdrawEvents.length > 0) {
-              html += `<div class="info"><strong class="success">✅ Found ${withdrawEvents.length} withdrawal(s)</strong></div>`;
-
-              for (let event of withdrawEvents) {
-                const amount = web3.utils.fromWei(
-                  event.returnValues.amount,
-                  "ether"
-                );
-                const block = await web3.eth.getBlock(event.blockNumber);
-                const date = new Date(block.timestamp * 1000).toLocaleString();
-
-                html += `
-                            <div class="flow-item">
-                                <div class="money-flow">
-                                    <div>
-                                        <strong>From Contract</strong><br>
-                                        <span class="address">${contractAddress}</span>
-                                    </div>
-                                    <div class="arrow">→</div>
-                                    <div>
-                                        <strong>To Owner</strong><br>
-                                        <span class="address">${event.returnValues.to}</span>
-                                    </div>
-                                    <div class="arrow">→</div>
-                                    <div>
-                                        <span class="amount">${amount} KPGT</span>
-                                    </div>
-                                </div>
-                                <table>
-                                    <tr><td><strong>Date:</strong></td><td>${date}</td></tr>
-                                    <tr><td><strong>Block:</strong></td><td>${event.blockNumber}</td></tr>
-                                    <tr><td><strong>Tx Hash:</strong></td><td><a href="${EXPLORER_URL}/tx/${event.transactionHash}" target="_blank" class="link">${event.transactionHash}</a></td></tr>
-                                </table>
-                            </div>
-                            `;
-              }
-
-              html += `<div class="info">
-                            <strong>✅ SUCCESS: Funds were withdrawn to the campaign owner!</strong><br>
-                            Check the owner's wallet balance at: <a href="${EXPLORER_URL}/address/${campaign.ownerWallet}" target="_blank" class="link">${campaign.ownerWallet}</a>
-                        </div>`;
-            } else {
-              if (parseFloat(web3.utils.fromWei(pending, "ether")) > 0) {
-                html += `<div class="warning">
-                                <strong>⚠️ No withdrawal events found, but ${web3.utils.fromWei(
-                                  pending,
-                                  "ether"
-                                )} KPGT is pending!</strong><br>
-                                The auto-withdrawal may have failed. You need to manually withdraw using the withdraw button.
-                            </div>`;
-              } else {
-                html += `<div class="error">
-                                <strong>❌ MYSTERY: No withdrawal events, but pending = 0</strong><br>
-                                This means either:
-                                <ul>
-                                    <li>The withdrawal happened but event wasn't emitted (contract bug)</li>
-                                    <li>Funds went somewhere unexpected</li>
-                                    <li>Need to check internal transactions on the blockchain</li>
-                                </ul>
-                                <strong>Action:</strong> Check the transaction that finished the campaign for internal transfers.
-                            </div>`;
-              }
-            }
-          } catch (err) {
-            html += `<div class="error"><strong>❌ Error fetching withdrawal events:</strong><br>${err.message}</div>`;
-          }
-
-          resultDiv.innerHTML = html;
-        } catch (err) {
-          resultDiv.innerHTML = `<div class="error">
-                    <strong>❌ Error:</strong><br>${err.message}
-                </div>`;
-          console.error(err);
+          alert(
+            `Campaign ${campaignId} tracked!\nOwner: ${campaign.owner}\nRaised: ${campaign.totalRaised}\nGoal: ${campaign.goal}`
+          );
+        } catch (error) {
+          console.error("Error tracking money flow:", error);
+          alert("Error tracking money flow. Check console for details.");
         }
       }
     </script>
