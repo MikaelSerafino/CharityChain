@@ -13,18 +13,54 @@
 
     <!-- NAVIGATION BAR -->
     <nav class="navbar">
-      <div class="nav-left">
-        <a href="index.html" class="logo" data-testid="link-home">CharityChain</a>
-        <a href="home.html" class="nav-link active">Home</a>
-        <a href="create.html" class="nav-link">Create</a>
-        <a href="completed.html" class="nav-link">Completed</a>
-      </div>
+  <div class="nav-inner">
 
-      <div class="nav-right">
-        <button id="modeToggle" class="btn small secondary">Dark Mode</button>
-        <a href="index.html" class="btn small">Explore Campaigns</a>
-      </div>
-    </nav>
+    <!-- ✅ LEFT SIDE: hamburger + logo -->
+    <div class="nav-left">
+      <button class="hamburger" id="hamburgerBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <a href="index.html" class="logo" data-testid="link-home">CharityChain</a>
+    </div>
+
+    <!-- ✅ DESKTOP CENTER LINKS -->
+    <div class="nav-links">
+      <a href="home.html" class="nav-link active">Home</a>
+      <a href="create.html" class="nav-link">Create</a>
+      <a href="completed.html" class="nav-link">Completed</a>
+    </div>
+
+    <!-- ✅ DESKTOP RIGHT BUTTONS -->
+    <div class="nav-right">
+      <button id="modeToggle" class="btn small secondary">Dark Mode</button>
+
+      <!-- DESKTOP Wallet Buttons (hidden on mobile) -->
+      <button id="connectWallet" class="btn small">Connect Wallet</button>
+      <button id="disconnectWallet" class="btn small secondary" style="display:none">
+        Disconnect
+      </button>
+    </div>
+
+    <!-- ✅ MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+
+      <!-- Mobile nav links -->
+      <a href="home.html" class="nav-link active">Home</a>
+      <a href="create.html" class="nav-link">Create</a>
+      <a href="completed.html" class="nav-link">Completed</a>
+
+      <!-- ✅ MOBILE WALLET BUTTONS -->
+      <button id="connectWalletMobile" class="btn small">Connect Wallet</button>
+      <button id="disconnectWalletMobile" class="btn small secondary" style="display:none">
+        Disconnect
+      </button>
+
+    </div>
+  </div>
+</nav>
 
     <!-- HERO SECTION -->
     <section class="hero-section" style="padding: 6rem 2rem; position: relative; overflow: hidden;">
@@ -557,10 +593,10 @@
       <div class="footer-section">
         <h3>Quick Links</h3>
         <ul class="footer-links">
-          <li><a href="index.html">Home</a></li>
+          <li><a href="home.html">Home</a></li>
           <li><a href="create.html">Create Campaign</a></li>
           <li><a href="completed.html">Completed Campaigns</a></li>
-          <li><a href="#about">About Us</a></li>
+          <li><a href="index.html">About Us</a></li>
         </ul>
       </div>
 
@@ -590,14 +626,43 @@
     <script src="theme.js"></script>
 
 <script>
-  const menuToggle = document.getElementById("menuToggle");
-  const mobileMenu = document.getElementById("mobileMenu");
 
   menuToggle.addEventListener("click", () => {
     mobileMenu.classList.toggle("active");
   });
 </script>
 
+<script>
+  const hamburger = document.getElementById("hamburgerBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  // Toggle mobile menu
+  hamburger.addEventListener("click", () => {
+    mobileMenu.classList.toggle("open");
+  });
+
+  // ✅ Wallet sync logic
+  const connectDesktop = document.getElementById("connectWallet");
+  const disconnectDesktop = document.getElementById("disconnectWallet");
+
+  const connectMobile = document.getElementById("connectWalletMobile");
+  const disconnectMobile = document.getElementById("disconnectWalletMobile");
+
+  // Mirror actions (mobile → desktop)
+  connectMobile.addEventListener("click", () => connectDesktop.click());
+  disconnectMobile.addEventListener("click", () => disconnectDesktop.click());
+
+  // ✅ Sync visibility every 200ms
+  setInterval(() => {
+    const connected = disconnectDesktop.style.display !== "none";
+
+    connectMobile.style.display = connected ? "none" : "block";
+    disconnectMobile.style.display = connected ? "block" : "none";
+
+    connectDesktop.style.display = connected ? "none" : "block";
+    disconnectDesktop.style.display = connected ? "block" : "none";
+  }, 200);
+</script>
 
   </body>
 </html>
