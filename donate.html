@@ -9,6 +9,8 @@
       content="Support this campaign by donating KPGT tokens. Every contribution makes a difference."
     />
     <link rel="stylesheet" href="style.css" />
+     <link rel="stylesheet" href="responsive.css">
+
   </head>
   <style>
     /* === HERO IMAGE CAROUSEL (Donate Page) === */
@@ -630,6 +632,7 @@
       font-size: 1.125rem;
       font-weight: 700;
       color: var(--primary-green);
+      margin-left: 1rem;
     }
 
     .no-donations {
@@ -925,6 +928,13 @@
               data-testid="button-donate"
             >
               Donate Now
+            </button>
+            <button
+              id="withdrawBtn"
+              class="btn-primary full-width"
+              style="display: none"
+            >
+              Withdraw Funds
             </button>
           </div>
         </div>

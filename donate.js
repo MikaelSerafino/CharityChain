@@ -1,4 +1,4 @@
-// donate.js – Enhanced with timestamps, fee preview, gallery, and carousel
+// donate.js – Enhanced with timestamps, fee preview, gallery, carousel, and WITHDRAW button
 
 let web3;
 let contract;
@@ -24,14 +24,16 @@ function showNotification(message, type = "info", ttl = 5000) {
 }
 
 // --- Loading overlay ---
-function showLoading(show) {
+function showLoading(show, message = "Processing...") {
   let overlay = document.getElementById("loadingOverlay");
   if (!overlay) {
     overlay = document.createElement("div");
     overlay.id = "loadingOverlay";
-    overlay.innerHTML = `<div class="spinner"></div><span id="loadingText">Processing...</span>`;
+    overlay.innerHTML = `<div class="spinner"></div><span id="loadingText">${message}</span>`;
     document.body.appendChild(overlay);
   }
+  const loadingText = overlay.querySelector('#loadingText');
+  if (loadingText) loadingText.textContent = message;
   overlay.style.display = show ? "flex" : "none";
 }
 
@@ -83,6 +85,8 @@ async function connectWallet() {
         contract = null;
         clearWalletButtonUI();
         showNotification("Wallet disconnected", "info");
+        // Reload to hide withdraw button if visible
+        loadCampaign();
       });
     }
   } else {
@@ -118,12 +122,8 @@ function updateFeeBreakdown(amount) {
 
   feeBreakdownEl.innerHTML = `
     <div class="fee-breakdown-box">
-      <p><strong>Your Donation:</strong> ${parseFloat(amount).toFixed(
-        4
-      )} KPGT</p>
-      <p><strong>Platform Fee (${(platformFeePercent / 100).toFixed(
-        1
-      )}%):</strong> ${fee.toFixed(4)} KPGT</p>
+      <p><strong>Your Donation:</strong> ${parseFloat(amount).toFixed(4)} KPGT</p>
+      <p><strong>Platform Fee (${(platformFeePercent / 100).toFixed(1)}%):</strong> ${fee.toFixed(4)} KPGT</p>
       <p><strong>Campaign Receives:</strong> ${netAmount.toFixed(4)} KPGT</p>
     </div>
   `;
@@ -200,6 +200,60 @@ function createHeroCarousel(images) {
   heroSection.insertAdjacentHTML('beforeend', carouselHTML);
 }
 
+// ====== WITHDRAW FUNDS FUNCTION ======
+async function withdrawFundsManually(campaignId) {
+  try {
+    if (!contract || !accounts || !accounts.length) {
+      showNotification("⚠️ Please connect your wallet first", "error");
+      return;
+    }
+
+    const confirmed = confirm("Are you sure you want to withdraw all available funds for this campaign?");
+    if (!confirmed) return;
+
+    showNotification("Processing withdrawal...", "info");
+    showLoading(true, "Submitting withdrawal transaction...");
+
+    const tx = await contract.methods
+      .withdrawFunds(campaignId)
+      .send({
+        from: accounts[0],
+      })
+      .on("transactionHash", (hash) => {
+        console.log("Withdraw transaction hash:", hash);
+        showLoading(true, "Waiting for confirmation...");
+      })
+      .on("receipt", (receipt) => {
+        console.log("Withdraw receipt:", receipt);
+      });
+
+    console.log("Withdraw transaction completed:", tx.transactionHash);
+    showLoading(false);
+    showNotification("✅ Funds withdrawn successfully!", "success");
+    
+    // Reload campaign to update display
+    await loadCampaign();
+  } catch (err) {
+    showLoading(false);
+    console.error("Withdraw failed:", err);
+    
+    let errorMessage = "Withdraw failed. ";
+    if (err.message.includes("No funds to withdraw")) {
+      errorMessage += "No funds available to withdraw.";
+    } else if (err.message.includes("Not campaign owner")) {
+      errorMessage += "You are not the campaign owner.";
+    } else if (err.message.includes("Campaign not finished")) {
+      errorMessage += "Campaign is not finished yet.";
+    } else if (err.message.includes("User denied")) {
+      errorMessage = "Transaction cancelled by user.";
+    } else {
+      errorMessage += "Check console for details.";
+    }
+    
+    showNotification("❌ " + errorMessage, "error");
+  }
+}
+
 // --- Load campaign info ---
 async function loadCampaign() {
   const params = new URLSearchParams(window.location.search);
@@ -258,10 +312,6 @@ async function loadCampaign() {
         goalKPGT > 0 && !isNaN(raisedKPGT) && !isNaN(goalKPGT)
           ? Math.min((raisedKPGT / goalKPGT) * 100, 100)
           : 0;
-      const feeProgress =
-        goalKPGT > 0 && !isNaN(platformFeeKPGT)
-          ? Math.min((platformFeeKPGT / goalKPGT) * 100, 100)
-          : 0;
 
       // Update progress bar with animation (using CSS custom property)
       progressBar.style.setProperty("--progress-width", `${totalProgress}%`);
@@ -318,6 +368,64 @@ async function loadCampaign() {
       feeInfoEl.innerText = `Platform Fee: ${(platformFeePercent / 100).toFixed(
         2
       )}% • Expected Fee: ${platformFeeKPGT.toFixed(4)} KPGT`;
+    }
+
+    // ====== ADD WITHDRAW BUTTON IF OWNER AND FINISHED ======
+    const currentAddress = accounts && accounts[0] ? accounts[0].toLowerCase() : null;
+    const ownerAddress = c.ownerWallet.toLowerCase();
+    const isFinished = c.finished;
+    const donateBox = document.querySelector(".donate-box");
+    
+    console.log("Campaign status check (donate page):");
+    console.log("- Current address:", currentAddress);
+    console.log("- Owner address:", ownerAddress);
+    console.log("- Is finished:", isFinished);
+    console.log("- Is owner:", currentAddress === ownerAddress);
+    
+    // Remove existing withdraw button if any
+    const existingWithdrawBtn = document.getElementById("withdrawBtn");
+    if (existingWithdrawBtn) {
+      existingWithdrawBtn.remove();
+    }
+
+    // Check if current user is owner AND campaign is finished
+    if (currentAddress && currentAddress === ownerAddress && isFinished && donateBox) {
+      // Check if there are pending withdrawals
+      const pendingAmount = await activeContract.methods.pendingWithdrawals(id).call();
+      const pendingKPGT = parseFloat(activeWeb3.utils.fromWei(pendingAmount, "ether"));
+      
+      console.log("- Pending withdrawals:", pendingKPGT, "KPGT");
+      
+      if (pendingKPGT > 0) {
+        const withdrawBtn = document.createElement("button");
+        withdrawBtn.id = "withdrawBtn";
+        withdrawBtn.className = "btn-primary full-width";
+        withdrawBtn.style.marginTop = "1rem";
+        withdrawBtn.style.background = "linear-gradient(135deg, #ff9800, #ff5722)";
+        withdrawBtn.innerHTML = `💰 Withdraw Funds<br><small style="font-size: 0.85em; font-weight: normal;">(${pendingKPGT.toFixed(4)} KPGT available)</small>`;
+        withdrawBtn.onclick = () => withdrawFundsManually(id);
+        
+        donateBox.appendChild(withdrawBtn);
+        console.log("✅ Withdraw button added for campaign owner");
+      } else if (pendingKPGT === 0) {
+        console.log("ℹ️ No pending funds to withdraw (already withdrawn or auto-paid)");
+        
+        // Show info that funds were already withdrawn
+        const infoDiv = document.createElement("div");
+        infoDiv.style.cssText = `
+          margin-top: 1rem;
+          padding: 1rem;
+          background: rgba(0, 192, 119, 0.1);
+          border: 1px solid rgba(0, 192, 119, 0.3);
+          border-radius: 8px;
+          text-align: center;
+          font-size: 0.9rem;
+        `;
+        infoDiv.innerHTML = `<strong>✅ Funds Already Withdrawn</strong>`;
+        donateBox.appendChild(infoDiv);
+      }
+    } else if (!isFinished) {
+      console.log("ℹ️ Campaign is still active (not finished)");
     }
 
     loadDonations(id);
@@ -417,14 +525,13 @@ if (donateBtn) {
       );
       donateBtn.disabled = true;
       donateBtn.textContent = "Processing...";
-      showLoading(true);
+      showLoading(true, "Submitting donation...");
 
       await contract.methods
         .donate(id)
         .send({ from: accounts[0], value: amountWei })
         .on("transactionHash", (hash) => {
-          document.getElementById("loadingText").innerText =
-            "Transaction submitted...";
+          showLoading(true, "Transaction submitted...");
           console.log("Transaction hash:", hash);
         })
         .on("receipt", async (receipt) => {
@@ -455,7 +562,7 @@ if (donateBtn) {
       showNotification("❌ Donation failed: " + err.message, "error");
     } finally {
       donateBtn.disabled = false;
-      donateBtn.textContent = "Donate";
+      donateBtn.textContent = "Donate Now";
     }
   });
 }

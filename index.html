@@ -6,6 +6,7 @@
     <title>CharityChain | Blockchain-Powered Transparency in Charity</title>
     <meta name="description" content="Transform charitable giving with blockchain technology. Create transparent campaigns, donate with KPGT, and track every contribution in real-time." />
     <link rel="stylesheet" href="style.css" />
+   <link rel="stylesheet" href="responsive.css">
     
   </head>
   <body>
@@ -37,7 +38,7 @@
           verified, and immutable—ensuring your generosity reaches those who need it most.
         </p>
         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem;">
-          <a href="index.html" class="hero-btn">
+          <a href="home.html" class="hero-btn">
             Browse Campaigns
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -587,5 +588,16 @@
 
     <!-- Theme Toggle Script -->
     <script src="theme.js"></script>
+
+<script>
+  const menuToggle = document.getElementById("menuToggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  menuToggle.addEventListener("click", () => {
+    mobileMenu.classList.toggle("active");
+  });
+</script>
+
+
   </body>
 </html>

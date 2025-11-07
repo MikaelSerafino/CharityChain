@@ -33,44 +33,53 @@
     <meta property="og:type" content="website" />
 
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="responsive.css">
   </head>
   <body>
-    <!-- NAVIGATION BAR -->
-    <nav class="navbar">
-      <div class="nav-left">
-        <a href="index.html" class="logo" data-testid="link-home"
-          >CharityChain</a
-        >
-        <a href="home.html" class="nav-link active">Home</a>
-        <a href="create.html" class="nav-link">Create</a>
-        <a href="completed.html" class="nav-link">Completed</a>
-      </div>
 
-      <div class="nav-right">
-        <button
-          id="modeToggle"
-          class="btn small secondary"
-          data-testid="button-theme-toggle"
-        >
-          Dark Mode
-        </button>
-        <button
-          id="connectWallet"
-          class="btn small"
-          data-testid="button-connect-wallet"
-        >
-          Connect Wallet
-        </button>
-        <button
-          id="disconnectWallet"
-          class="btn small secondary"
-          style="display: none"
-          data-testid="button-disconnect-wallet"
-        >
-          Disconnect
-        </button>
-      </div>
-    </nav>
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <!-- LEFT: Logo -->
+    <div class="nav-left">
+      <a href="index.html" class="logo" data-testid="link-home">CharityChain</a>
+    </div>
+
+    <!-- CENTER: desktop links (visible on desktop) -->
+    <div class="nav-links" id="navLinks">
+      <a href="home.html" class="nav-link active">Home</a>
+      <a href="create.html" class="nav-link">Create</a>
+      <a href="completed.html" class="nav-link">Completed</a>
+    </div>
+
+    <!-- RIGHT: mode, wallet, hamburger -->
+    <div class="nav-right">
+      <button id="modeToggle" class="btn small secondary" data-testid="button-theme-toggle" aria-pressed="false">
+        Dark Mode
+      </button>
+
+      <button id="connectWallet" class="btn small" data-testid="button-connect-wallet">
+        Connect Wallet
+      </button>
+
+      <button id="disconnectWallet" class="btn small secondary" style="display: none" data-testid="button-disconnect-wallet">
+        Disconnect
+      </button>
+
+      <!-- hamburger (mobile only) -->
+      <button id="menuToggle" class="hamburger" aria-controls="mobileMenu" aria-expanded="false" aria-label="Open menu">
+        <span class="hamb-icon" aria-hidden="true">☰</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MOBILE MENU: absolutely positioned so it does not push content down -->
+  <div id="mobileMenu" class="mobile-menu" aria-hidden="true">
+    <a href="home.html" class="nav-link">Home</a>
+    <a href="create.html" class="nav-link">Create</a>
+    <a href="completed.html" class="nav-link">Completed</a>
+  </div>
+</nav>
 
     <!-- HERO SECTION -->
     <section class="hero-section">
@@ -569,5 +578,57 @@
         }
       });
     </script>
+
+<script>
+  (function () {
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    // Toggle mobile menu
+    menuToggle?.addEventListener('click', () => {
+      const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+      menuToggle.setAttribute('aria-expanded', String(!expanded));
+      mobileMenu.classList.toggle('open');
+      mobileMenu.setAttribute('aria-hidden', String(expanded));
+      // change icon for clarity (hamburger <-> X)
+      const icon = menuToggle.querySelector('.hamb-icon');
+      if (!expanded) {
+        icon.textContent = '✕';
+        menuToggle.setAttribute('aria-label', 'Close menu');
+      } else {
+        icon.textContent = '☰';
+        menuToggle.setAttribute('aria-label', 'Open menu');
+      }
+    });
+
+    // Close mobile menu if user resizes to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        mobileMenu.classList.remove('open');
+        mobileMenu.setAttribute('aria-hidden', 'true');
+        if (menuToggle) {
+          menuToggle.setAttribute('aria-expanded', 'false');
+          const icon = menuToggle.querySelector('.hamb-icon');
+          if (icon) icon.textContent = '☰';
+          menuToggle.setAttribute('aria-label', 'Open menu');
+        }
+      }
+    });
+
+    // Optional: close mobile menu when clicking a link inside it
+    mobileMenu?.addEventListener('click', (e) => {
+      if (e.target.matches('.nav-link')) {
+        mobileMenu.classList.remove('open');
+        mobileMenu.setAttribute('aria-hidden', 'true');
+        if (menuToggle) {
+          menuToggle.setAttribute('aria-expanded', 'false');
+          const icon = menuToggle.querySelector('.hamb-icon');
+          if (icon) icon.textContent = '☰';
+        }
+      }
+    });
+  })();
+</script>
+
   </body>
 </html>
