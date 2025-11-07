@@ -41,44 +41,54 @@
     <nav class="navbar">
   <div class="nav-inner">
 
-    <!-- Left side: Logo -->
+    <!-- ✅ LEFT SIDE: hamburger + logo -->
     <div class="nav-left">
+      <button class="hamburger" id="hamburgerBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
       <a href="index.html" class="logo" data-testid="link-home">CharityChain</a>
     </div>
 
-    <!-- Hamburger button (mobile only) -->
-    <button class="hamburger" id="hamburgerBtn">
-    <span></span>
-    <span></span>
-    <span></span>
-    </button>
-
-
-    <!-- Center desktop links -->
+    <!-- ✅ DESKTOP CENTER LINKS -->
     <div class="nav-links">
       <a href="home.html" class="nav-link active">Home</a>
       <a href="create.html" class="nav-link">Create</a>
       <a href="completed.html" class="nav-link">Completed</a>
     </div>
 
-    <!-- Right side controls -->
+    <!-- ✅ DESKTOP RIGHT BUTTONS -->
     <div class="nav-right">
       <button id="modeToggle" class="btn small secondary">Dark Mode</button>
+
+      <!-- DESKTOP Wallet Buttons (hidden on mobile) -->
       <button id="connectWallet" class="btn small">Connect Wallet</button>
-      <button id="disconnectWallet" class="btn small secondary" style="display: none">
+      <button id="disconnectWallet" class="btn small secondary" style="display:none">
         Disconnect
       </button>
     </div>
 
-    <!-- Mobile dropdown menu -->
+    <!-- ✅ MOBILE MENU -->
     <div class="mobile-menu" id="mobileMenu">
+
+      <!-- Mobile nav links -->
       <a href="home.html" class="nav-link active">Home</a>
       <a href="create.html" class="nav-link">Create</a>
       <a href="completed.html" class="nav-link">Completed</a>
+
+      <!-- ✅ MOBILE WALLET BUTTONS -->
+      <button id="connectWalletMobile" class="btn small">Connect Wallet</button>
+      <button id="disconnectWalletMobile" class="btn small secondary" style="display:none">
+        Disconnect
+      </button>
+
     </div>
 
   </div>
 </nav>
+
 
     <!-- HERO SECTION -->
     <section class="hero-section">
@@ -579,13 +589,47 @@
     </script>
 
     <script>
-  const hamburger = document.getElementById("hamburgerBtn");
-  const mobileMenu = document.getElementById("mobileMenu");
+  // const hamburger = document.getElementById("hamburgerBtn");
+  // const mobileMenu = document.getElementById("mobileMenu");
 
   hamburger.addEventListener("click", () => {
     mobileMenu.classList.toggle("open");
   });
+  
 </script>
+
+<script>
+  const hamburger = document.getElementById("hamburgerBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  // Toggle mobile menu
+  hamburger.addEventListener("click", () => {
+    mobileMenu.classList.toggle("open");
+  });
+
+  // ✅ Wallet sync logic
+  const connectDesktop = document.getElementById("connectWallet");
+  const disconnectDesktop = document.getElementById("disconnectWallet");
+
+  const connectMobile = document.getElementById("connectWalletMobile");
+  const disconnectMobile = document.getElementById("disconnectWalletMobile");
+
+  // Mirror actions (mobile → desktop)
+  connectMobile.addEventListener("click", () => connectDesktop.click());
+  disconnectMobile.addEventListener("click", () => disconnectDesktop.click());
+
+  // ✅ Sync visibility every 200ms
+  setInterval(() => {
+    const connected = disconnectDesktop.style.display !== "none";
+
+    connectMobile.style.display = connected ? "none" : "block";
+    disconnectMobile.style.display = connected ? "block" : "none";
+
+    connectDesktop.style.display = connected ? "none" : "block";
+    disconnectDesktop.style.display = connected ? "block" : "none";
+  }, 200);
+</script>
+
 
   </body>
 </html>

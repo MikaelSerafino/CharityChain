@@ -15,6 +15,35 @@ img {
 /* =================================================================
    MOBILE STYLES (up to 480px)
    ================================================================= */
+
+:root {
+  /* base theme variables */
+  --background: #ffffff;
+  --border-light: #e6e6e6;
+  --background-rgb: 255, 255, 255;
+
+  /* ✅ RGB variable for translucency */
+  /* --background-rgb: 255, 255, 255; */
+
+  /* Green Theme Colors (Maintained from original) */
+  --primary-green: #00c077;
+  --primary-green-dark: #00a062;
+  --primary-green-light: #00e68a;
+  --green-glow: rgba(0, 192, 119, 0.3);
+  --green-50: rgba(0, 192, 119, 0.05);
+  --green-100: rgba(0, 192, 119, 0.1);
+  --green-200: rgba(0, 192, 119, 0.2);
+}
+
+/* ✅ Dark mode support */
+html[data-theme="dark"] {
+  --background: #0e1a14;
+  --text-primary: #ffffff;
+  --border-light: #123123; /* optional tweak */
+  --background-rgb: 14, 26, 20; /* ✅ translucent menu now works */
+}
+
+
 @media (max-width: 480px) {
   .hero-section {
     padding: 3rem 1rem !important;
@@ -132,11 +161,10 @@ img {
    NAVBAR – FIXED & FULLY RESPONSIVE
    ================================================================= */
 
-   /* Hamburger color follows theme */
+/* Hamburger color follows theme */
 .hamburger {
-  color: var(--text-primary);   /* ✅ automatic theme color */
+  color: var(--text-primary); /* ✅ automatic theme color */
 }
-
 
 :root {
   --navbar-bg: var(--background, #fff);
@@ -189,8 +217,8 @@ img {
 
 /* Active page */
 .nav-link.active {
-  background: rgba(0,0,0,0.06);
-  font-weight: 600;
+  color: var(--primary-green);
+  background: var(--green-100);
 }
 
 /* Right side buttons */
@@ -211,6 +239,7 @@ img {
 }
 
 /* Mobile dropdown menu — THEME AWARE */
+/* Mobile dropdown menu — THEME + translucent background */
 .mobile-menu {
   display: none;
   flex-direction: column;
@@ -219,42 +248,102 @@ img {
   left: 0;
   right: 0;
   padding: 1rem;
-  background: var(--background);           
-  color: var(--text-primary);              
+
+  /* ✅ translucent background depending on theme */
+  background: rgba(var(--background-rgb), 0.75);
+  backdrop-filter: blur(8px);
+
+  color: var(--text-primary);
   border-top: 1px solid var(--border-light);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   z-index: 50;
 }
 
 .mobile-menu .nav-link {
-  color: var(--text-primary);              
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-}
-
-
-.mobile-menu .nav-link {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
 }
 
 /* Show mobile menu when open */
 .mobile-menu.open {
+  color: var(--text-primary);
   display: flex;
   animation: slideDown 0.18s ease-out;
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ DESKTOP NAVBAR FIX — match original layout */
+@media (min-width: 769px) {
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* space between logo | nav-links | buttons */
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 2rem;
+  }
+
+  /* ✅ Center nav-links perfectly */
+  .nav-links {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  /* Hide hamburger on desktop */
+  .hamburger {
+    display: none !important;
+  }
+
+  /* Desktop menu must NOT be absolute */
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .navbar {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .nav-inner {
+    max-width: 100% !important;
+    width: 100%;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    gap: 2rem;
+  }
 }
 
 /* =================================================================
    NAVBAR – MOBILE RULES
    ================================================================= */
 @media (max-width: 768px) {
-
   /* hide desktop center links */
   .nav-links {
     display: none;
@@ -321,7 +410,24 @@ img {
 .hamburger span {
   width: 22px;
   height: 2.5px;
-  background: var(--text-primary);   /* ✅ automatic theme color */
+  background: var(--text-primary); /* ✅ automatic theme color */
   border-radius: 3px;
   transition: background 0.25s ease;
+}
+
+/* ✅ MOBILE — hide wallet address */
+@media (max-width: 768px) {
+  #walletAddressDisplay,
+  .wallet-address,
+  .account-address {
+    display: none !important;
+  }
+}
+
+/* ✅ Hide Connect/Disconnect buttons in the TOP BAR on mobile */
+@media (max-width: 768px) {
+  #connectWallet,
+  #disconnectWallet {
+    display: none !important;
+  }
 }
