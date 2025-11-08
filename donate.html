@@ -761,7 +761,7 @@
     </div>
   </div>
 </nav>
-
+<div class="menu-overlay" id="menuOverlay"></div>
     <main class="container">
       <!-- Hero Section with Image -->
       <div class="campaign-hero">
@@ -1012,30 +1012,27 @@
     <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
 
     <script src="abi.js"></script>
-    <script src="theme.js"></script>
-    <script src="donate.js"></script>
-
-<script>
+    <script src="theme.js"<script>
   const hamburger = document.getElementById("hamburgerBtn");
   const mobileMenu = document.getElementById("mobileMenu");
+  const overlay = document.getElementById("menuOverlay");
 
-  // Toggle mobile menu
   hamburger.addEventListener("click", () => {
     mobileMenu.classList.toggle("open");
+    hamburger.classList.toggle("open");
+    overlay.classList.toggle("open");
   });
 
-  // ✅ Wallet sync logic
+  /* ✅ WALLET SYNC */
   const connectDesktop = document.getElementById("connectWallet");
   const disconnectDesktop = document.getElementById("disconnectWallet");
 
   const connectMobile = document.getElementById("connectWalletMobile");
   const disconnectMobile = document.getElementById("disconnectWalletMobile");
 
-  // Mirror actions (mobile → desktop)
   connectMobile.addEventListener("click", () => connectDesktop.click());
   disconnectMobile.addEventListener("click", () => disconnectDesktop.click());
 
-  // ✅ Sync visibility every 200ms
   setInterval(() => {
     const connected = disconnectDesktop.style.display !== "none";
 
@@ -1044,6 +1041,8 @@
 
     connectDesktop.style.display = connected ? "none" : "block";
     disconnectDesktop.style.display = connected ? "block" : "none";
+  }, 200);
+</script>connected ? "block" : "none";
   }, 200);
 </script>
 

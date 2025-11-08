@@ -28,7 +28,7 @@
 
     <!-- ✅ DESKTOP CENTER LINKS -->
     <div class="nav-links">
-      <a href="home.html" class="nav-link active">Home</a>
+      <a href="home.html" class="nav-link">Home</a>
       <a href="create.html" class="nav-link">Create</a>
       <a href="completed.html" class="nav-link">Completed</a>
     </div>
@@ -48,7 +48,7 @@
     <div class="mobile-menu" id="mobileMenu">
 
       <!-- Mobile nav links -->
-      <a href="home.html" class="nav-link active">Home</a>
+      <a href="home.html" class="nav-link">Home</a>
       <a href="create.html" class="nav-link">Create</a>
       <a href="completed.html" class="nav-link">Completed</a>
 
@@ -61,6 +61,7 @@
     </div>
   </div>
 </nav>
+<div class="menu-overlay" id="menuOverlay"></div>
 
     <!-- HERO SECTION -->
     <section class="hero-section" style="padding: 6rem 2rem; position: relative; overflow: hidden;">
@@ -635,24 +636,24 @@
 <script>
   const hamburger = document.getElementById("hamburgerBtn");
   const mobileMenu = document.getElementById("mobileMenu");
+  const overlay = document.getElementById("menuOverlay");
 
-  // Toggle mobile menu
   hamburger.addEventListener("click", () => {
     mobileMenu.classList.toggle("open");
+    hamburger.classList.toggle("open");
+    overlay.classList.toggle("open");
   });
 
-  // ✅ Wallet sync logic
+  /* ✅ WALLET SYNC */
   const connectDesktop = document.getElementById("connectWallet");
   const disconnectDesktop = document.getElementById("disconnectWallet");
 
   const connectMobile = document.getElementById("connectWalletMobile");
   const disconnectMobile = document.getElementById("disconnectWalletMobile");
 
-  // Mirror actions (mobile → desktop)
   connectMobile.addEventListener("click", () => connectDesktop.click());
   disconnectMobile.addEventListener("click", () => disconnectDesktop.click());
 
-  // ✅ Sync visibility every 200ms
   setInterval(() => {
     const connected = disconnectDesktop.style.display !== "none";
 

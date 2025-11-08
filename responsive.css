@@ -431,3 +431,138 @@ html[data-theme="dark"] {
     display: none !important;
   }
 }
+
+/* ✅ Base hamburger lines */
+.hamburger {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  z-index: 999; /* stays above menu */
+}
+
+.hamburger span {
+  width: 26px;
+  height: 3px;
+  background: var(--text-primary);
+  border-radius: 5px;
+  transition: 0.3s ease;
+}
+
+/* ✅ When menu is OPEN → animate hamburger to X */
+.hamburger.open span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* ============================================================
+   ✅ MOBILE NAVBAR ANIMATION PACK
+   Add this at the bottom of responsive.css
+   ============================================================ */
+
+/* ✅ Base hidden state */
+.mobile-menu {
+  transform: translateY(-12px);
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+/* ✅ Menu open animation (slide + fade in) */
+.mobile-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ✅ Staggered link animations */
+.mobile-menu .nav-link,
+.mobile-menu .btn {
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: 0.25s ease;
+}
+
+/* ✅ When menu opens, animate items */
+.mobile-menu.open .nav-link:nth-child(1),
+.mobile-menu.open .btn:nth-child(1) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.05s;
+}
+
+.mobile-menu.open .nav-link:nth-child(2),
+.mobile-menu.open .btn:nth-child(2) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.10s;
+}
+
+.mobile-menu.open .nav-link:nth-child(3),
+.mobile-menu.open .btn:nth-child(3) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.15s;
+}
+
+/* ✅ Mobile wallet buttons (if any) */
+.mobile-menu.open .btn:nth-child(4) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.20s;
+}
+
+.mobile-menu.open .btn:nth-child(5) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.25s;
+}
+
+/* ✅ Tap feedback (makes it feel like a mobile app) */
+.nav-link:active,
+.btn:active {
+  transform: scale(0.94);
+}
+
+/* ============================================================
+   ✅ OVERLAY (optional but recommended)
+   Add this to HTML: <div class="menu-overlay" id="menuOverlay"></div>
+   ============================================================ */
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 40;
+}
+
+/* ✅ When menu is open */
+.menu-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Keep overlay behind the menu */
+.mobile-menu {
+  z-index: 50;
+}
+
+/* ✅ FORCE MOBILE MENU TO SHOW WHEN OPEN */
+.mobile-menu.open {
+  display: flex !important;
+}
